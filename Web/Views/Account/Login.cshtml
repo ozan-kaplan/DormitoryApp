@@ -1,0 +1,33 @@
+﻿@using Web.Models
+
+@{
+    Layout = null;
+}
+
+@model UserViewModel
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login</title>
+    <link href="~/Content/custom.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <h4>
+
+            @Model.Name
+        </h4>
+        <h4>
+
+            @Model.Surname
+        </h4>
+        <h4>
+
+            @Model.Username
+        </h4>
+    </div>
+</body>
+</html>
