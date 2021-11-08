@@ -7,24 +7,13 @@ using Web.DAL;
 
 namespace Web.Controllers
 {
+
+    [Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
         {
-
-            try
-            {
-                using (DormitoryAppDbContext dbContext = new DormitoryAppDbContext())
-                {
-                    var userList = dbContext.Users.ToList();
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
+             
             return View();
         }
 
