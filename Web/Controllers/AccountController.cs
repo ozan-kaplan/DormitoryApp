@@ -17,13 +17,12 @@ namespace Web.Controllers
 
         public ActionResult Login()
         {
-            UserViewModel userViewModel = new UserViewModel()
+            User userViewModel = new User()
             {
                 Id = 1,
                 Name = "Ozan",
-                Surname = "Kaplan",
-                Username = "admin"
-
+                Lastname = "Kaplan",
+                Email = "admin" 
             };
 
             return View(userViewModel);

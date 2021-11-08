@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Web.DAL;
 
 namespace Web.Controllers
 {
@@ -10,6 +11,20 @@ namespace Web.Controllers
     {
         public ActionResult Index()
         {
+
+            try
+            {
+                using (DormitoryAppDbContext dbContext = new DormitoryAppDbContext())
+                {
+                    var userList = dbContext.Users.ToList();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
             return View();
         }
 
