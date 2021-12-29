@@ -14,122 +14,180 @@ namespace Web.Controllers
 
     public class DormitoryAnnouncementsController : BaseController
     {
-        private DormitoryAppDbContext db = new DormitoryAppDbContext();
 
-        // GET: DormitoryAnnouncements
         public ActionResult Index()
         {
-            return View(db.DormitoryAnnouncements.ToList());
-        }
-
-        // GET: DormitoryAnnouncements/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            try
             {
+                return View(_dbContext.DormitoryAnnouncements.ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DormitoryAnnouncement dormitoryAnnouncement = db.DormitoryAnnouncements.Find(id);
-            if (dormitoryAnnouncement == null)
-            {
-                return HttpNotFound();
-            }
-            return View(dormitoryAnnouncement);
+
         }
 
-        // GET: DormitoryAnnouncements/Create
+
+        public ActionResult Details(int? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
+                if (dormitoryAnnouncement == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(dormitoryAnnouncement);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+
+        }
+
+
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: DormitoryAnnouncements/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Announcement,IsPublished")] DormitoryAnnouncement dormitoryAnnouncement)
         {
-            if (ModelState.IsValid)
+            try
             {
+                if (ModelState.IsValid)
+                {
+                    dormitoryAnnouncement.CreatedDate = DateTime.Now;
+                    dormitoryAnnouncement.CreatedUserId = SessionUser.Id;
 
-                dormitoryAnnouncement.CreatedDate = DateTime.Now;
-                dormitoryAnnouncement.CreatedUserId = SessionUser.Id;
 
-                db.DormitoryAnnouncements.Add(dormitoryAnnouncement);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                    _dbContext.DormitoryAnnouncements.Add(dormitoryAnnouncement);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
+                return View(dormitoryAnnouncement);
             }
-
-            return View(dormitoryAnnouncement);
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
-        // GET: DormitoryAnnouncements/Edit/5
+
+
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            try
             {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
+                if (dormitoryAnnouncement == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(dormitoryAnnouncement);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DormitoryAnnouncement dormitoryAnnouncement = db.DormitoryAnnouncements.Find(id);
-            if (dormitoryAnnouncement == null)
-            {
-                return HttpNotFound();
-            }
-            return View(dormitoryAnnouncement);
         }
 
-        // POST: DormitoryAnnouncements/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Announcement,IsPublished")] DormitoryAnnouncement dormitoryAnnouncement)
+        public ActionResult Edit([Bind(Include = "Id,Announcement,IsPublished,CreatedUserId,CreatedDate,PublishedDate")] DormitoryAnnouncement dormitoryAnnouncement)
         {
-            if (ModelState.IsValid)
+            try
             {
-                dormitoryAnnouncement.ModifiedDate = DateTime.Now;
-                dormitoryAnnouncement.ModifiedUserId = SessionUser.Id;
-                db.Entry(dormitoryAnnouncement).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(dormitoryAnnouncement);
-        }
+                if (ModelState.IsValid)
+                {
 
-        // GET: DormitoryAnnouncements/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
+                    if (dormitoryAnnouncement.IsPublished && !dormitoryAnnouncement.PublishedDate.HasValue)
+                    {
+                        dormitoryAnnouncement.PublishedDate = DateTime.Now;
+                    } 
+
+                    if (!dormitoryAnnouncement.IsPublished)
+                    {
+                        dormitoryAnnouncement.PublishedDate = null;
+                    } 
+
+                    dormitoryAnnouncement.ModifiedDate = DateTime.Now;
+                    dormitoryAnnouncement.ModifiedUserId = SessionUser.Id;
+                    _dbContext.Entry(dormitoryAnnouncement).State = EntityState.Modified;
+                    _dbContext.SaveChanges(); 
+
+                    return RedirectToAction("Index");    
+                }
+                return View(dormitoryAnnouncement);
+            }
+            catch (Exception ex)
             {
+                _logger.Error(ex);
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DormitoryAnnouncement dormitoryAnnouncement = db.DormitoryAnnouncements.Find(id);
-            if (dormitoryAnnouncement == null)
-            {
-                return HttpNotFound();
-            }
-            return View(dormitoryAnnouncement);
         }
 
-        // POST: DormitoryAnnouncements/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+
+        public ActionResult Delete(int? id)
         {
-            DormitoryAnnouncement dormitoryAnnouncement = db.DormitoryAnnouncements.Find(id);
-            db.DormitoryAnnouncements.Remove(dormitoryAnnouncement);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
+                if (dormitoryAnnouncement == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(dormitoryAnnouncement);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
 
-        protected override void Dispose(bool disposing)
+       
+        public ActionResult Delete(int id)
         {
-            if (disposing)
+            try
             {
-                db.Dispose();
+                DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
+                
+                _dbContext.DormitoryAnnouncements.Remove(dormitoryAnnouncement);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
             }
-            base.Dispose(disposing);
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
+
+
     }
 }

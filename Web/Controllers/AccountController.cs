@@ -20,6 +20,13 @@ namespace Web.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+
+        [AllowAnonymous]
         [HttpPost] 
         public ActionResult Login ([Bind(Include = "Email,Password")] UserLoginModel user)
         {
@@ -45,6 +52,17 @@ namespace Web.Controllers
         {
             FormsAuthentication.SignOut();
             return RedirectToAction("Login");
+        }
+
+
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

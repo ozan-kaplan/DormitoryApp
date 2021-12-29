@@ -18,7 +18,18 @@ namespace Web.Controllers
         // GET: RoomApplications
         public ActionResult Index()
         {
-            return View(db.RoomApplications.ToList());
+            List<RoomApplication> list = null;
+
+            if (SessionUser.UserRole == Models.User.Role.Student)
+            {
+                list = db.RoomApplications.Where(d => d.UserId == SessionUser.Id).ToList();
+            }
+            else
+            {
+                list = db.RoomApplications.ToList();
+            } 
+
+            return View(list);
         }
 
         // GET: RoomApplications/Details/5

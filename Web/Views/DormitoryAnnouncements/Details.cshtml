@@ -5,71 +5,77 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
+ 
+<h3 class="display-5 pb-3 mb-3 border-bottom">Announcement Details</h3>
 
-<div>
-    <h4>DormitoryAnnouncement</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Announcement)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Announcement)
-        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.IsPublished)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.IsPublished)
-        </dd>
+<table class="table table-bordered"> 
+    <tbody>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Announcement  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.Announcement)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold">  Is Published   </span>
+            </td>
+            <td>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.PublishedDate)
-        </dt>
+                @if (Model.IsPublished)
+                { 
+                    <span>YES</span>
+                }
+                else
+                {
 
-        <dd>
-            @Html.DisplayFor(model => model.PublishedDate)
-        </dd>
+                    <span>NO</span>
+                }
+            </td>
+        </tr>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedUserId)
-        </dt>
+        <tr>
+            <td>
+                <span class="font-weight-bold">  Created Date   </span>
+            </td>
+            <td>  
+                @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm:ss") 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold">  Modified Date   </span>
+            </td>
+            <td>
+                @if (Model.ModifiedDate.HasValue)
+                {
+                    @Model.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm:ss")
+                }
+            </td>
+        </tr>
 
-        <dd>
-            @Html.DisplayFor(model => model.CreatedUserId)
-        </dd>
+        <tr>
+            <td>
+                <span class="font-weight-bold">  Published Date  </span>
+            </td>
+            <td>
+                @if (Model.PublishedDate.HasValue)
+                {
+                    @Model.PublishedDate.Value.ToString("dd.MM.yyyy HH:mm:ss")
+                }
+            </td>
+        </tr>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ModifiedUserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ModifiedUserId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ModifiedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ModifiedDate)
-        </dd>
-
-    </dl>
-</div>
+    </tbody>
+</table>
+ 
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit" , new { id = Model.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
+    <a class="btn btn-outline-secondary btn-sm " href="@Url.Action("Index")">
+        <i class="fas fa-chevron-left"></i>  Back to List
+    </a> 
 </p>

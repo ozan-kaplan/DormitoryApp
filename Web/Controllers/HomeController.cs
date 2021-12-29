@@ -7,9 +7,8 @@ using Web.DAL;
 
 namespace Web.Controllers
 {
-
-    [Authorize]
-    public class HomeController : Controller
+     
+    public class HomeController : BaseController
     {
         public ActionResult Index()
         {
