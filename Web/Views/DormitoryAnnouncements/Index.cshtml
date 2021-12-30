@@ -1,12 +1,15 @@
 ﻿@using Web.Models
+@using PagedList.Mvc;
 
-@model IEnumerable<Web.Models.DormitoryAnnouncement>
+@model PagedList.IPagedList<Web.Models.DormitoryAnnouncement>
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+
 
 @{
     ViewBag.Title = "Announcements";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
- 
+
 
 
 <h3 class="display-5 pb-3 mb-3 border-bottom">Announcement List</h3>
@@ -17,14 +20,30 @@
 }
 
 @if (user != null && user.UserRole != Web.Models.User.Role.Student)
-{ 
-<p class="text-end text-right"> 
-    <a class="btn btn-success btn-sm" href="@Url.Action("Create")"><i class="fas fa-plus"></i> Add New Announcement</a> 
-</p>
+{
+    <p class="text-end text-right">
+        <a class="btn btn-success" href="@Url.Action("Create")"><i class="fas fa-plus"></i> Add New Announcement</a>
+    </p>
 
 }
 
-<table class="table table-striped">
+@using (Html.BeginForm("Index", "DormitoryAnnouncements", FormMethod.Get))
+{
+
+    <div class="row">
+        <div class="col-3">
+            @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", placeholder = "Announcement" })
+        </div>
+        <div class="col-2">
+            <button type="submit" class="btn btn-dark btn-sm"> <i class="fas fa-search"></i> Search</button>
+        </div>
+    </div>
+
+
+
+}
+
+<table class="table table-striped mt-4">
     <tr>
         <th>
             Announcement
@@ -33,7 +52,8 @@
             Is Published
         </th>
         <th>
-            Published Date
+            @Html.ActionLink("Published Date", "Index", new { sortOrder = ViewBag.PublishedDateSortParm, currentFilter = ViewBag.CurrentFilter })
+
         </th>
 
         <th></th>
@@ -65,22 +85,26 @@
                     @if (user.UserRole != Web.Models.User.Role.Student)
                     {
 
-                         <a class="btn btn-primary btn-sm text-white" href="@Url.Action("Edit" , new { id = item.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
+                        <a class="btn btn-primary btn-sm text-white" href="@Url.Action("Edit" , new { id = item.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
                         <a class="btn btn-info btn-sm" href="@Url.Action("Details", new { id = item.Id })"><i class="fas fa-clipboard-list"></i> Details</a>
-                        <a class="btn btn-danger btn-sm text-white" style="cursor: pointer !important;"  data-toggle="modal" data-target="#deleteModal" onclick="ShowDeleteModal(@item.Id);"><i class="fas fa-trash"></i> Delete
-                    
-                    </a>
+                        <a class="btn btn-danger btn-sm text-white" style="cursor: pointer !important;" data-toggle="modal" data-target="#deleteModal" onclick="ShowDeleteModal(@item.Id);">
+                            <i class="fas fa-trash"></i> Delete
+
+                        </a>
 
                     }
 
                 </td>
             </tr>
-        } 
+        }
     }
 
 
 </table>
 
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 
 
@@ -113,4 +137,4 @@
         }
 
     </script>
-    }
+}

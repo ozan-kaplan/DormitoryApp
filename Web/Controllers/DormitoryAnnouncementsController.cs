@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PagedList;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -15,20 +16,61 @@ namespace Web.Controllers
     public class DormitoryAnnouncementsController : BaseController
     {
 
-        public ActionResult Index()
+
+
+        public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            try
+           
+
+            ViewBag.CurrentSort = sortOrder;
+            if (sortOrder != null)
             {
-                return View(_dbContext.DormitoryAnnouncements.ToList());
+                ViewBag.PublishedDateSortParm = sortOrder == "published_date_asc" ? "published_date_desc" : "published_date_asc";
             }
-            catch (Exception ex)
+            else
             {
-                _logger.Error(ex);
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                ViewBag.PublishedDateSortParm = "published_date_desc";
             }
 
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            var announcements = from a in _dbContext.DormitoryAnnouncements
+                           select a;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                announcements = announcements.Where(s => s.Announcement.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "published_date_desc":
+                    announcements = announcements.OrderByDescending(s => s.PublishedDate);
+                    break;
+                case "published_date_asc":
+                    announcements = announcements.OrderBy(s => s.PublishedDate); 
+                    break; 
+                default:  
+                    announcements = announcements.OrderByDescending(s => s.Id);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+            return View(announcements.ToPagedList(pageNumber, pageSize));
         }
 
+
+
+
+         
 
         public ActionResult Details(int? id)
         {
@@ -63,7 +105,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Announcement,IsPublished")] DormitoryAnnouncement dormitoryAnnouncement)
+        public ActionResult Create([Bind(Include = "Announcement,IsPublished")] DormitoryAnnouncement dormitoryAnnouncement)
         {
             try
             {
@@ -72,6 +114,10 @@ namespace Web.Controllers
                     dormitoryAnnouncement.CreatedDate = DateTime.Now;
                     dormitoryAnnouncement.CreatedUserId = SessionUser.Id;
 
+                    if (dormitoryAnnouncement.IsPublished)
+                    {
+                        dormitoryAnnouncement.PublishedDate = DateTime.Now;
+                    }
 
                     _dbContext.DormitoryAnnouncements.Add(dormitoryAnnouncement);
                     _dbContext.SaveChanges();
@@ -148,38 +194,22 @@ namespace Web.Controllers
         }
 
 
-        public ActionResult Delete(int? id)
-        {
-            try
-            {
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
-                if (dormitoryAnnouncement == null)
-                {
-                    return HttpNotFound();
-                }
-                return View(dormitoryAnnouncement);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-        }
+       
 
        
+
         public ActionResult Delete(int id)
         {
             try
             {
                 DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
-                
-                _dbContext.DormitoryAnnouncements.Remove(dormitoryAnnouncement);
-                _dbContext.SaveChanges();
-                return RedirectToAction("Index");
+                if (dormitoryAnnouncement != null)
+                {
+                    _dbContext.DormitoryAnnouncements.Remove(dormitoryAnnouncement);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                return View();
             }
             catch (Exception ex)
             {
