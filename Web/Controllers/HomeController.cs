@@ -6,10 +6,10 @@ using System.Web.Mvc;
 using Web.DAL;
 
 namespace Web.Controllers
-{
-     
+{ 
     public class HomeController : BaseController
     {
+       
         public ActionResult Index()
         {
              

@@ -9,7 +9,7 @@ using Web.Models;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    
     public class BaseController : Controller
     {
 
@@ -30,7 +30,7 @@ namespace Web.Controllers
 
             if (SessionUser == null)
             {
-                 
+                filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
             }
 
             base.OnActionExecuting(filterContext);
