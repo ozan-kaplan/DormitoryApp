@@ -29,7 +29,6 @@
 
 @using (Html.BeginForm("Index", "DormitoryAnnouncements", FormMethod.Get))
 {
-
     <div class="row">
         <div class="col-3">
             @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", placeholder = "Announcement" })
@@ -38,10 +37,8 @@
             <button type="submit" class="btn btn-dark btn-sm"> <i class="fas fa-search"></i> Search</button>
         </div>
     </div>
-
-
-
 }
+
 
 <table class="table table-striped mt-4">
     <tr>

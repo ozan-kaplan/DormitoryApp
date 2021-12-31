@@ -1,5 +1,6 @@
 ﻿@using Web.Models
 
+
 @model IEnumerable<Web.Models.Room>
 
 @{
@@ -7,17 +8,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2> Room List </h2>
+<h3 class="display-5 pb-3 mb-3 border-bottom"> Room List </h3>
 
- 
-@{  
-    var user = Session["User"] as User; 
+
+@{
+    var user = Session["User"] as User;
 }
 
 @if (user.UserRole != Web.Models.User.Role.Student)
 {
-    <p>
-        @Html.ActionLink("Create New Room", "Create")
+    <p class="text-end text-right">
+        <a class="btn btn-success" href="@Url.Action("Create")"><i class="fas fa-plus"></i> Create New Room </a>
     </p>
 }
 
@@ -28,13 +29,13 @@
             Room Name
         </th>
         <th>
-           Room Fee
+            Room Fee
         </th>
         <th>
-            Room Capacity 
+            Room Capacity
         </th>
         <th>
-             Current Capacity 
+            Current Capacity
         </th>
         <th>
             Status
@@ -43,36 +44,70 @@
     </tr>
 
 
-    @for (int i = 0; i < 20; i++)
+    @if (Model != null)
     {
-         foreach (var item in Model)
+        foreach (var item in Model)
         {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.RoomName) @(i + 1)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.RoomFee)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.RoomCapacity)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.CurrentCapacity)
-    </td>
-    <td>
-        Available
-    </td>
-    <td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomFee)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomCapacity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CurrentCapacity)
+                </td>
+                <td>
+                    Available
+                </td>
+                <td>
+                    @if (user.UserRole != Web.Models.User.Role.Student)
+                    {
+                        <a class="btn btn-primary btn-sm text-white" href="@Url.Action("Edit" , new { id = item.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
+                        <a class="btn btn-info btn-sm" href="@Url.Action("Details", new { id = item.Id })"><i class="fas fa-clipboard-list"></i> Details</a>
+                        <a class="btn btn-danger btn-sm text-white" style="cursor: pointer !important;" data-toggle="modal" data-target="#deleteModal" onclick="ShowDeleteModal(@item.Id);">
+                            <i class="fas fa-trash"></i> Delete
 
-        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.Id }) 
-
-    </td>
-</tr>
+                        </a>
+                    }
+                </td>
+            </tr>
         }
     }
 
 
 </table>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Operation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+        function ShowDeleteModal(id) {
+            console.log(id);
+        }
+
+    </script>
+}
