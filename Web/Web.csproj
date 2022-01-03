@@ -143,18 +143,29 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RoomApplicationsController.cs" />
     <Compile Include="Controllers\RoomsController.cs" />
+    <Compile Include="Controllers\StudentsController.cs" />
     <Compile Include="DAL\DormitoryAppDbContext.cs" />
     <Compile Include="DAL\DormitoryAppDbInitializer.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\GeneralHelper.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\DormitoryAnnouncement.cs" />
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\RoomApplication.cs" />
+    <Compile Include="Models\SearchModels\BaseSearchModel.cs" />
+    <Compile Include="Models\SearchModels\RoomSearchModel.cs" />
+    <Compile Include="Models\SearchModels\StudentsSearchModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserLoginModel.cs" />
     <Compile Include="Models\UserRoom.cs" />
+    <Compile Include="Models\ViewModels\DataTableViewModel.cs" />
+    <Compile Include="Models\ViewModels\DormitoryAnnouncementViewModel.cs" />
+    <Compile Include="Models\ViewModels\Enums.cs" />
+    <Compile Include="Models\ViewModels\JsonResultViewModel.cs" />
+    <Compile Include="Models\ViewModels\RoomViewModel.cs" />
+    <Compile Include="Models\ViewModels\StudentsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -163,7 +174,9 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\custom.css" />
+    <Content Include="Content\ladda-themeless.min.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Content\toastr.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -177,6 +190,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\dormitoryapp.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -186,7 +200,10 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\ladda.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\spin.min.js" />
+    <Content Include="Scripts\toastr.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -209,7 +226,6 @@
     <Content Include="Views\Rooms\Edit.cshtml" />
     <Content Include="Views\Rooms\Index.cshtml" />
     <Content Include="Views\DormitoryAnnouncements\Create.cshtml" />
-    <Content Include="Views\DormitoryAnnouncements\Delete.cshtml" />
     <Content Include="Views\DormitoryAnnouncements\Details.cshtml" />
     <Content Include="Views\DormitoryAnnouncements\Edit.cshtml" />
     <Content Include="Views\DormitoryAnnouncements\Index.cshtml" />
@@ -218,6 +234,8 @@
     <Content Include="Views\RoomApplications\Details.cshtml" />
     <Content Include="Views\RoomApplications\Edit.cshtml" />
     <Content Include="Views\RoomApplications\Index.cshtml" />
+    <Content Include="Views\Students\Details.cshtml" />
+    <Content Include="Views\Students\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

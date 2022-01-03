@@ -1,23 +1,15 @@
-﻿@using Web.Models
-@using PagedList.Mvc;
-
-@model PagedList.IPagedList<Web.Models.DormitoryAnnouncement>
-<link href="~/Content/PagedList.css" rel="stylesheet" />
+﻿@using Web.Models;
 
 
 @{
     ViewBag.Title = "Announcements";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-
-
-<h3 class="display-5 pb-3 mb-3 border-bottom">Announcement List</h3>
-
-
 @{
     var user = Session["User"] as User;
-}
+} 
+<h3 class="display-5 pb-3 mb-3 border-bottom">Announcement List</h3> 
+
 
 @if (user != null && user.UserRole != Web.Models.User.Role.Student)
 {
@@ -25,113 +17,151 @@
         <a class="btn btn-success" href="@Url.Action("Create")"><i class="fas fa-plus"></i> Add New Announcement</a>
     </p>
 
-}
+} 
 
-@using (Html.BeginForm("Index", "DormitoryAnnouncements", FormMethod.Get))
-{
-    <div class="row">
-        <div class="col-3">
-            @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", placeholder = "Announcement" })
-        </div>
-        <div class="col-2">
-            <button type="submit" class="btn btn-dark btn-sm"> <i class="fas fa-search"></i> Search</button>
-        </div>
+
+<div class="row">
+    <div class="col-3">
+        <input type="text" id="txtSearch" class="form-control" placeholder="Search Keyword" />
     </div>
-}
+    <div class="col-2"> 
 
+        <button id="btnSearch" class="btn   btn-dark ladda-button" data-style="expand-left"><span class="ladda-label">Search</span></button>
 
-<table class="table table-striped mt-4">
-    <tr>
-        <th>
-            Announcement
-        </th>
-        <th>
-            Is Published
-        </th>
-        <th>
-            @Html.ActionLink("Published Date", "Index", new { sortOrder = ViewBag.PublishedDateSortParm, currentFilter = ViewBag.CurrentFilter })
-
-        </th>
-
-        <th></th>
-    </tr>
-    @if (Model != null)
-    {
-        foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Announcement)
-                </td>
-                <td>
-                    @if (item.IsPublished)
-                    {
-                        <span>YES</span>
-                    }
-                    else
-                    {
-
-                        <span>NO</span>
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PublishedDate)
-                </td>
-                <td>
-
-                    @if (user.UserRole != Web.Models.User.Role.Student)
-                    {
-
-                        <a class="btn btn-primary btn-sm text-white" href="@Url.Action("Edit" , new { id = item.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
-                        <a class="btn btn-info btn-sm" href="@Url.Action("Details", new { id = item.Id })"><i class="fas fa-clipboard-list"></i> Details</a>
-                        <a class="btn btn-danger btn-sm text-white" style="cursor: pointer !important;" data-toggle="modal" data-target="#deleteModal" onclick="ShowDeleteModal(@item.Id);">
-                            <i class="fas fa-trash"></i> Delete
-
-                        </a>
-
-                    }
-
-                </td>
-            </tr>
-        }
-    }
-
-
-</table>
-
-<br />
-Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
-
-
-
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Delete Operation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Yes</button>
-            </div>
-        </div>
     </div>
 </div>
 
 
+
+<table class="table table-striped table-bordered table-advance table-hover responsive nowrap order-column  mt-4" id="announcementDataTable" width="100%">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Announcement
+            </th>
+            <th>
+                IsPublished
+            </th>
+            <th>
+                PublishedDate
+            </th>
+            <th>
+                Operations
+            </th>
+        </tr>
+    </thead>
+</table>
+
+
 @section scripts{
+
+
     <script>
 
-        function ShowDeleteModal(id) {
-            console.log(id);
+        var dataGrid;
+
+
+            $(document).ready(function () {
+            searchButton = Ladda.create(document.querySelector("#btnSearch"));
+                dataGrid = document.DormitoryApp.dataTable({
+                 id: "announcementDataTable",
+                url: '@Url.Action("GetDormitoryAnnouncementList")',
+                sortIndex: 0,
+                sortDirection: "desc",
+                searchButton: searchButton,
+                columns: [
+                    { data: "Id", name: "Id" },
+                    { data: "Announcement", name: "Announcement", autoWidth: true },
+                    { data: "IsPublished", name: "IsPublished", autoWidth: true },
+                    { data: "PublishedDate", name: "PublishedDate", autoWidth: true },
+                        {
+                            mRender: function (data, type, row) {
+
+                                var html = "";
+
+                                if ('@user.UserRole' != '@Web.Models.User.Role.Student') {
+                                   var editBtn =  $("<a/>", {
+                                        "class": "btn btn-primary btn-sm text-white",
+                                        "href": "DormitoryAnnouncements/Edit?id=" + row.Id ,
+                                        style: "cursor:pointer;",
+                                        text: ' Edit'
+                                   });
+
+                                    editBtn.prepend(document.EditIcon);
+                                    html = editBtn[0].outerHTML;
+
+
+                                    var detailsBtn = $("<a/>", {
+                                        "class": "btn btn-warning btn-sm text-white",
+                                        "href": "DormitoryAnnouncements/Details?id=" + row.Id,
+                                        style: "cursor:pointer;",
+                                        text: ' Details'
+                                    });
+
+                                    detailsBtn.prepend(document.DetailsIcon);
+                                    html += " " + detailsBtn[0].outerHTML;
+
+
+                                    var deleteBtn = $("<a/>", {
+                                        "class": "btn btn-danger btn-sm text-white",
+                                        onclick : "DeleteAnnouncement(" + row.Id + ");",
+                                        style: "cursor:pointer;",
+                                        text: ' Delete'
+                                    });
+
+                                    deleteBtn.prepend(document.DeleteIcon);
+                                    html += " " + deleteBtn[0].outerHTML;
+                                }
+                                return html;
+                            }
+                        }
+                ],
+                columnDefs: [
+                 {
+                     "targets": 0,
+                     "visible": false,
+                     "searchable": false
+                 },
+                 {
+                     "targets": 4,
+                     "searchable": false,
+                     "orderable": false
+                 }
+                ]
+            });
+            $("#btnSearch").click(function () {
+                searchButton.start();
+                var searchModel = {
+                    SearchText: $("#txtSearch").val()
+                };
+                dataGrid.search(JSON.stringify(searchModel));
+                dataGrid.draw();
+            });
+
+        });
+
+
+
+
+        function DeleteAnnouncement(id) {
+               var obj = { 
+                url: '@Url.Action("DeleteDormitoryAnnouncement")',
+                data: { id: id },
+                grid: dataGrid
+            };
+            document.DormitoryApp.deleteOperation(obj);
         }
 
+
+
+
+
     </script>
+
+
+
 }
+
+ 

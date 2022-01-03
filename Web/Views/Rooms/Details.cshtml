@@ -5,48 +5,54 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
-
-<div>
-    <h4>Room</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.RoomName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.RoomName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.RoomFee)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.RoomFee)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.RoomCapacity)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.RoomCapacity)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CurrentCapacity)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CurrentCapacity)
-        </dd>
 
 
-    </dl>
-</div>
+<h3 class="display-5 pb-3 mb-3 border-bottom">Room Details</h3>
+
+
+
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> RoomName  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.RoomName)</td>
+        </tr>
+
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Room Fee  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.RoomFee)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Room Capacity  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.RoomCapacity)</td>
+        </tr>
+
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Current Capacity </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.CurrentCapacity)</td>
+        </tr>
+
+
+    </tbody>
+</table>
+
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit" , new { id = Model.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
+    <a class="btn btn-outline-secondary btn-sm " href="@Url.Action("Index")">
+        <i class="fas fa-chevron-left"></i>  Back to List
+    </a>
 </p>
+
+
+
+ 

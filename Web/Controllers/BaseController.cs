@@ -9,7 +9,7 @@ using Web.Models;
 
 namespace Web.Controllers
 {
-    
+
     public class BaseController : Controller
     {
 
@@ -23,7 +23,7 @@ namespace Web.Controllers
         public BaseController()
         {
         }
-         
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             SessionUser = Session["User"] as User;
@@ -32,6 +32,56 @@ namespace Web.Controllers
             {
                 filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
             }
+            else
+            {
+
+                string actionName = this.ControllerContext.RouteData.Values["action"].ToString();
+                string controllerName = this.ControllerContext.RouteData.Values["controller"].ToString();
+
+                switch (controllerName)
+                {
+                    case "DormitoryAnnouncements":
+                        if (SessionUser.UserRole == Models.User.Role.Student)
+                        {
+                            if (actionName == "Create" || actionName == "Edit" || actionName == "DeleteDormitoryAnnouncement")
+                            {
+
+                                filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
+                            }
+                        }
+                        break;
+                    case "Students":
+                        if (SessionUser.UserRole == Models.User.Role.Student)
+                        {
+                            filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
+                        }
+                        break;
+                    case "Rooms":
+                        if (SessionUser.UserRole == Models.User.Role.Student)
+                        {
+                            if (actionName == "Create" || actionName == "Edit" || actionName == "DeleteRoom")
+                            {
+
+                                filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
+                            } 
+                        }
+
+
+
+                        break;
+
+
+
+                    default:
+                        break;
+                }
+
+
+            }
+
+
+
+
 
             base.OnActionExecuting(filterContext);
         }
@@ -44,5 +94,7 @@ namespace Web.Controllers
             }
             base.Dispose(disposing);
         }
+
+
     }
 }

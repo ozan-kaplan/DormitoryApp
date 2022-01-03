@@ -16,9 +16,12 @@ namespace Web.Models
         public enum Gender
         {
             Unknown , Male, Female 
-        } 
+        }
+        public enum Status
+        {
+            Pending, Approved, Unapproved
+        }
 
-        
         public string Name { get; set; }
         
         public string Lastname { get; set; }
@@ -32,6 +35,8 @@ namespace Web.Models
         public Gender UserGender { get; set; } 
        
         public Role UserRole { get; set; }
-          
+
+        public Status UserStatus { get; set; }
+
     }
 }

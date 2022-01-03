@@ -11,7 +11,7 @@ namespace Web.DAL
         protected override void Seed(DormitoryAppDbContext context)
         {
 
-            User userItem = new User()
+            User systemAdmingUserItem = new User()
             {
                 Name = "System",
                 Lastname = "Admin",
@@ -19,10 +19,26 @@ namespace Web.DAL
                 Password = "1",
                 UserRole = User.Role.SystemAdmin,
                 UserGender = User.Gender.Unknown,
-                CreatedDate = DateTime.Now,
+                UserStatus = User.Status.Approved,
+                IsDeleted = false,
+                CreatedDate = DateTime.Now, 
                 CreatedUserId = -1
             };
-            context.Users.Add(userItem);
+            User studentItem = new User()
+            {
+                Name = "Ozan",
+                Lastname = "Kaplan",
+                Email = "ozankaplan@mail.com",
+                Password = "1",
+                UserRole = User.Role.Student,
+                UserGender = User.Gender.Male,
+                UserStatus = User.Status.Pending,
+                IsDeleted = false,
+                CreatedDate = DateTime.Now,
+                CreatedUserId = 1
+            };
+            context.Users.Add(systemAdmingUserItem);
+            context.Users.Add(studentItem);
             context.SaveChanges();
 
         }

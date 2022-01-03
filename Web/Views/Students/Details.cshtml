@@ -1,0 +1,73 @@
+﻿@model Web.Models.ViewModels.StudentsViewModel
+
+@{
+    ViewBag.Title = "Student Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h3 class="display-5 pb-3 mb-3 border-bottom">Student Details</h3>
+
+
+
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Name  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.Name)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Lastname  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.Lastname)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Email  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.Email)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> Gender  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.UserGender)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> User Status  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.UserStatus)</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="font-weight-bold"> User Role  </span>
+            </td>
+            <td> @Html.DisplayFor(model => model.UserRole)</td>
+        </tr>  
+        <tr>
+            <td>
+                <span class="font-weight-bold">  Register Date   </span>
+            </td>
+            <td>
+                @Model.CreatedDate 
+            </td>
+        </tr>
+
+
+
+
+    </tbody>
+</table>
+
+<p>
+
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit" , new { id = Model.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
+    <a class="btn btn-outline-secondary btn-sm " href="@Url.Action("Index")">
+        <i class="fas fa-chevron-left"></i>  Back to List
+    </a>
+</p>

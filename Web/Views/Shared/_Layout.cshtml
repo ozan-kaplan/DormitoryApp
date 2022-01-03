@@ -13,6 +13,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"> 
+   
+    <link href="~/Content/ladda-themeless.min.css" rel="stylesheet" />
+    <link href="~/Content/toastr.css" rel="stylesheet" />
 </head>
 <body>
     @{
@@ -39,15 +44,15 @@
 
                     @if (user != null && user.UserRole != Web.Models.User.Role.Student)
                     {
-                        <li class="nav-item">@Html.ActionLink("Students", "Index", "User", null, new { @class = "nav-link" })</li>
-                    }  
+                        <li class="nav-item">@Html.ActionLink("Students", "Index", "Students", null, new { @class = "nav-link" })</li>
+                    }
 
                     <li class="nav-item">@Html.ActionLink("Rooms", "Index", "Rooms", null, new { @class = "nav-link" })</li>
 
 
 
 
-                    @if (user != null &&  user.UserRole != Web.Models.User.Role.Student)
+                    @if (user != null && user.UserRole != Web.Models.User.Role.Student)
                     {
                         <li class="nav-item">@Html.ActionLink("Room Applications", "Index", "RoomApplications", null, new { @class = "nav-link" })</li>
                         <li class="nav-item">@Html.ActionLink("Past Room Applications", "PastRoomApplications", "RoomApplications", null, new { @class = "nav-link" })</li>
@@ -55,8 +60,10 @@
                     }
                     else
                     {
-                        <li class="nav-item">@Html.ActionLink("My Room Applications", "Index", "RoomApplications", null, new { @class = "nav-link" })</li> 
-                        <li class="nav-item">@Html.ActionLink("My Past Room Applications", "StudentPastRoomApplications", "RoomApplications", null, new { @class = "nav-link" })</li> 
+                        <li class="nav-item">@Html.ActionLink("My Room Applications", "Index", "RoomApplications", null, new { @class = "nav-link" })</li>
+
+                        <li class="nav-item">@Html.ActionLink("My Past Room Applications", "StudentPastRoomApplications", "RoomApplications", null, new { @class = "nav-link" })</li>
+
                     }
 
                     <li class="nav-item">@Html.ActionLink("My Profile Information", "Profile", "User", null, new { @class = "nav-link" })</li>
@@ -73,7 +80,7 @@
 
 
 
-    <div class="container body-content pt-4">
+    <div class="container body-content pt-4" id="pageBodyContainer">
         @RenderBody()
         <hr />
         <footer>
@@ -82,15 +89,44 @@
     </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-
-
+    @*<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>*@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
 
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script src="~/Scripts/spin.min.js"></script>
+    <script src="~/Scripts/ladda.min.js"></script>
+    <script src="~/Scripts/toastr.js"></script>
+    <script src="~/Scripts/dormitoryapp.js"></script>
+    <script>
+        document.DormitoryApp = new DormitoryApp();
+        document.EditIcon = '<i id="editIcon" class="fas fa-pencil-alt"></i>';
+        document.DetailsIcon = '<i id="detailIcon" class="fas fa-clipboard-list"></i>';
+        document.DeleteIcon = '<i id="deleteIcon" class="fas fa-trash"></i>';
+        function closePopUp(element) {
+            var popUpDiv = $(element);
+            popUpDiv.modal("hide");
+            setTimeout(function () {
+
+                var parentDiv = popUpDiv.parent(".modal-scrollable");
+                var nextDiv = parentDiv.next();
+                parentDiv.remove();
+                nextDiv.remove();
+                popUpDiv.remove();
+            }, 500);
+        }
+
+    </script>
 
     @RenderSection("scripts", required: false)
 </body>

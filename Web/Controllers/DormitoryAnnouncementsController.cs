@@ -7,70 +7,100 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using Web.DAL;
+using Web.Helpers;
 using Web.Models;
+using Web.Models.SearchModels;
+using Web.Models.ViewModels;
 
 namespace Web.Controllers
 {
 
     public class DormitoryAnnouncementsController : BaseController
     {
-
-
-
-        public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
+        public ActionResult Index()
         {
-           
-
-            ViewBag.CurrentSort = sortOrder;
-            if (sortOrder != null)
-            {
-                ViewBag.PublishedDateSortParm = sortOrder == "published_date_asc" ? "published_date_desc" : "published_date_asc";
-            }
-            else
-            {
-                ViewBag.PublishedDateSortParm = "published_date_desc";
-            }
-
-            if (searchString != null)
-            {
-                page = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-
-            ViewBag.CurrentFilter = searchString;
-
-            var announcements = from a in _dbContext.DormitoryAnnouncements
-                           select a;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                announcements = announcements.Where(s => s.Announcement.Contains(searchString));
-            }
-            switch (sortOrder)
-            {
-                case "published_date_desc":
-                    announcements = announcements.OrderByDescending(s => s.PublishedDate);
-                    break;
-                case "published_date_asc":
-                    announcements = announcements.OrderBy(s => s.PublishedDate); 
-                    break; 
-                default:  
-                    announcements = announcements.OrderByDescending(s => s.Id);
-                    break;
-            }
-
-            int pageSize = 10;
-            int pageNumber = (page ?? 1);
-            return View(announcements.ToPagedList(pageNumber, pageSize));
+            return View();
         }
 
+        [HttpPost]
+        public JsonResult GetDormitoryAnnouncementList(DTParameters param)
+        {
+            DataTableViewModel<DormitoryAnnouncementViewModel> dataTableViewModel = new DataTableViewModel<DormitoryAnnouncementViewModel>();
+
+            try
+            {
+
+                string direction = string.Empty;
+                if (param.Order[0] != null && param.Columns[param.Order[0].Column].Orderable && !string.IsNullOrEmpty(param.SortOrder))
+                {
+                    direction = param.Order[0].Dir.ToString();
+                }
+                BaseSearchModel searchParams = null;
+                if (!string.IsNullOrEmpty(param.Search.Value))
+                {
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    searchParams = js.Deserialize<StudentsSearchModel>(param.Search.Value.ToString());
+                }
+
+                var dormitoryAnnouncements = from s in _dbContext.DormitoryAnnouncements where !s.IsDeleted  select s;
+
+
+                if (searchParams != null)
+                {
+                    if (!string.IsNullOrEmpty(searchParams.SearchText))
+                    {
+                        dormitoryAnnouncements = dormitoryAnnouncements.Where(s => s.Announcement.ToLower().Contains(searchParams.SearchText));
+                    }
+                     
+                }
+
+                if (!string.IsNullOrEmpty(direction))
+                {
+                    if (direction == "ASC")
+                        dormitoryAnnouncements = dormitoryAnnouncements.OrderByField(param.SortOrder, true);
+                    else if (direction == "DESC")
+                    {
+                        dormitoryAnnouncements = dormitoryAnnouncements.OrderByField(param.SortOrder, false);
+                    }
+                }
+                else
+                {
+                    dormitoryAnnouncements = dormitoryAnnouncements.OrderByField("CreatedDate", true);
+                }
+
+
+                var dormitoryAnnouncementList = dormitoryAnnouncements.Skip(param.Start).Take(param.Length).ToList();
+
+
+                dataTableViewModel.draw = param.Draw;
+
+                dataTableViewModel.data.AddRange(dormitoryAnnouncementList
+                    .Select(s => new DormitoryAnnouncementViewModel()
+                    {
+
+                        Id = s.Id,
+                        Announcement = s.Announcement, 
+                        IsPublished = s.IsPublished  ? "YES" : "NO",
+                        PublishedDate = s.PublishedDate.HasValue ? s.PublishedDate.Value.ToString("dd.MM.yyyy HH:mm:ss") : ""
+                    }));
+
+                dataTableViewModel.recordsTotal = dormitoryAnnouncements.Count();
+                dataTableViewModel.recordsFiltered = dataTableViewModel.recordsTotal;
 
 
 
-         
+                return Json(dataTableViewModel);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return Json(dataTableViewModel);
+            }
+        }
+
 
         public ActionResult Details(int? id)
         {
@@ -194,29 +224,40 @@ namespace Web.Controllers
         }
 
 
-       
-
-       
-
-        public ActionResult Delete(int id)
+        [HttpPost] 
+        public JsonResult DeleteDormitoryAnnouncement(int id)
         {
+            JsonResultViewModel<bool> jsonResponse = new JsonResultViewModel<bool>();
             try
             {
-                DormitoryAnnouncement dormitoryAnnouncement = _dbContext.DormitoryAnnouncements.Find(id);
-                if (dormitoryAnnouncement != null)
+                
+                jsonResponse.NotifyType = JsonResultNotifyType.error;
+                jsonResponse.Message = "An error occurred while processing your transaction.";
+
+
+                var item = _dbContext.DormitoryAnnouncements.FirstOrDefault(d => d.Id == id);
+                if (item != null)
                 {
-                    _dbContext.DormitoryAnnouncements.Remove(dormitoryAnnouncement);
+                    item.IsDeleted = true;
+                    item.ModifiedDate = DateTime.Now;
+                    item.ModifiedUserId = SessionUser.Id;
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Index");
+
+                    jsonResponse.NotifyType = JsonResultNotifyType.info;
+                    jsonResponse.Message = "Your transaction has been completed successfully";
                 }
-                return View();
+                 
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            return Json(jsonResponse, JsonRequestBehavior.AllowGet);
         }
+
+
+         
+
 
 
     }
