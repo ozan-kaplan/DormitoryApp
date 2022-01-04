@@ -1,4 +1,5 @@
 ﻿@using Web.Models
+@using Web.Helpers
 @using Web.Models.ViewModels
 
 
@@ -9,10 +10,10 @@
 
 <h3 class="display-5 pb-3 mb-3 border-bottom"> Room List </h3>
 
-
 @{
-    var user = Session["User"] as User;
+    var user = CachingHelper.GetUserFromCache(User.Identity.Name);
 }
+
 
 @if (user.UserRole != Web.Models.User.Role.Student)
 {
@@ -43,35 +44,41 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col">
+        <table class="table table-striped table-bordered table-advance table-hover responsive nowrap order-column  mt-4" id="roomDataTable" width="100%">
 
-<table class="table table-striped table-bordered table-advance table-hover responsive nowrap order-column  mt-4" id="roomDataTable" width="100%">
-   
-    
-    <thead>
-        <tr>
-            <th>
-            </th>
-            <th>
-                Room Name
-            </th>
-            <th>
-                Room Fee
-            </th>
-            <th>
-                Room Capacity
-            </th>
-            <th>
-                Current Capacity
-            </th>
-            <th>
-                Status
-            </th>
-            <th>
-                Operations
-            </th>
-        </tr>
-    </thead>
-</table>
+
+            <thead>
+                <tr>
+                    <th>
+                    </th>
+                    <th>
+                        Room Name
+                    </th>
+                    <th>
+                        Room Fee
+                    </th>
+                    <th>
+                        Room Capacity
+                    </th>
+                    <th>
+                        Current Capacity
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Operations
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+
+</div>
+
 
 
 <div class="modal fade" id="roomApplicationModal" tabindex="-1" role="dialog" aria-labelledby="roomApplicationModalLabel" aria-hidden="true">
@@ -271,6 +278,6 @@
 
 
 
-    </script> 
+    </script>
 
 }

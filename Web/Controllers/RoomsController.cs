@@ -122,7 +122,7 @@ namespace Web.Controllers
             }
         }
 
-         
+
         public ActionResult Details(int? id)
         {
             try
@@ -143,9 +143,9 @@ namespace Web.Controllers
                 _logger.Error(ex);
             }
 
-            return RedirectToAction("Index" , "Rooms");
+            return RedirectToAction("Index", "Rooms");
         }
-         
+
         public ActionResult Create()
         {
             return View();
@@ -175,7 +175,7 @@ namespace Web.Controllers
             return View(room);
         }
 
-       
+
         public ActionResult Edit(int? id)
         {
             try
@@ -196,10 +196,10 @@ namespace Web.Controllers
                 _logger.Error(ex);
             }
             return RedirectToAction("Create", "Rooms");
-            
+
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,RoomName,RoomFee,RoomCapacity")] RoomViewModel room)
@@ -223,7 +223,7 @@ namespace Web.Controllers
                         return RedirectToAction("Index");
                     }
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -275,24 +275,29 @@ namespace Web.Controllers
                 jsonResponse.NotifyType = JsonResultNotifyType.error;
                 jsonResponse.Message = "An error occurred while processing your transaction.";
 
-                if (roomApplication.AccommodationStartDate == DateTime.MinValue || roomApplication.AccodomodationEndDate == DateTime.MinValue  )
+                if (roomApplication.AccommodationStartDate == DateTime.MinValue || roomApplication.AccodomodationEndDate == DateTime.MinValue)
                 {
                     jsonResponse.Message = "All fields are required. Please fill all inputs.";
                     return Json(jsonResponse, JsonRequestBehavior.AllowGet);
                 }
 
 
-                if (roomApplication.AccommodationStartDate >  roomApplication.AccodomodationEndDate )
+                if (roomApplication.AccommodationStartDate > roomApplication.AccodomodationEndDate)
                 {
                     jsonResponse.Message = "Accommodation Start Date should be lower than Accodomodation End Date";
                     return Json(jsonResponse, JsonRequestBehavior.AllowGet);
                 }
 
 
-                var hasUserRoomApplication  = _dbContext.RoomApplications.FirstOrDefault(d => d.UserId == SessionUser.Id);
+                var hasUserRoomApplication = _dbContext.RoomApplications.FirstOrDefault(d => d.UserId == SessionUser.Id &&
+
+               d.RoomApplicationStatus == RoomApplication.RoomApplicationStatusEnum.Pending
+               || d.RoomApplicationStatus == RoomApplication.RoomApplicationStatusEnum.WaitPayment
+               || d.RoomApplicationStatus == RoomApplication.RoomApplicationStatusEnum.PaymentCompleted);
+
                 if (hasUserRoomApplication != null)
                 {
-                    jsonResponse.Message = "You already have a room application. Please wait your application result."; 
+                    jsonResponse.Message = "You already have a room application. Please wait your application result.";
                     return Json(jsonResponse, JsonRequestBehavior.AllowGet);
                 }
 

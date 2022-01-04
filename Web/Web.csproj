@@ -149,12 +149,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\CachingHelper.cs" />
     <Compile Include="Helpers\GeneralHelper.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\DormitoryAnnouncement.cs" />
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\RoomApplication.cs" />
     <Compile Include="Models\SearchModels\BaseSearchModel.cs" />
+    <Compile Include="Models\SearchModels\RoomApplicationSearchModel.cs" />
     <Compile Include="Models\SearchModels\RoomSearchModel.cs" />
     <Compile Include="Models\SearchModels\StudentsSearchModel.cs" />
     <Compile Include="Models\User.cs" />
@@ -164,6 +166,7 @@
     <Compile Include="Models\ViewModels\DormitoryAnnouncementViewModel.cs" />
     <Compile Include="Models\ViewModels\Enums.cs" />
     <Compile Include="Models\ViewModels\JsonResultViewModel.cs" />
+    <Compile Include="Models\ViewModels\RoomApplicationViewModel.cs" />
     <Compile Include="Models\ViewModels\RoomViewModel.cs" />
     <Compile Include="Models\ViewModels\StudentsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -229,10 +232,6 @@
     <Content Include="Views\DormitoryAnnouncements\Details.cshtml" />
     <Content Include="Views\DormitoryAnnouncements\Edit.cshtml" />
     <Content Include="Views\DormitoryAnnouncements\Index.cshtml" />
-    <Content Include="Views\RoomApplications\Create.cshtml" />
-    <Content Include="Views\RoomApplications\Delete.cshtml" />
-    <Content Include="Views\RoomApplications\Details.cshtml" />
-    <Content Include="Views\RoomApplications\Edit.cshtml" />
     <Content Include="Views\RoomApplications\Index.cshtml" />
     <Content Include="Views\Students\Details.cshtml" />
     <Content Include="Views\Students\Index.cshtml" />

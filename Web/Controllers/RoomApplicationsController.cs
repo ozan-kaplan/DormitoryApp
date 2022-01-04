@@ -6,134 +6,248 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using Web.DAL;
+using Web.Helpers;
 using Web.Models;
+using Web.Models.SearchModels;
+using Web.Models.ViewModels;
 
 namespace Web.Controllers
 {
     public class RoomApplicationsController : BaseController
     {
-        private DormitoryAppDbContext db = new DormitoryAppDbContext();
-
-        // GET: RoomApplications
         public ActionResult Index()
-        {
-            List<RoomApplication> list = null;
-
-            if (SessionUser.UserRole == Models.User.Role.Student)
-            {
-                list = db.RoomApplications.Where(d => d.UserId == SessionUser.Id).ToList();
-            }
-            else
-            {
-                list = db.RoomApplications.ToList();
-            } 
-
-            return View(list);
-        }
-
-        // GET: RoomApplications/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            RoomApplication roomApplication = db.RoomApplications.Find(id);
-            if (roomApplication == null)
-            {
-                return HttpNotFound();
-            }
-            return View(roomApplication);
-        }
-
-        // GET: RoomApplications/Create
-        public ActionResult Create()
         {
             return View();
         }
 
-        // POST: RoomApplications/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,UserId,RoomId,ApplyDate,AccommodationStartDate,AccodomodationEndDate,PaymentDate,CreatedUserId,CreatedDate,ModifiedUserId,ModifiedDate")] RoomApplication roomApplication)
+        public JsonResult GetRoomApplicationList(DTParameters param)
         {
-            if (ModelState.IsValid)
-            {
-                db.RoomApplications.Add(roomApplication);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            DataTableViewModel<RoomApplicationViewModel> dataTableViewModel = new DataTableViewModel<RoomApplicationViewModel>();
 
-            return View(roomApplication);
+            try
+            {
+
+
+
+                string direction = string.Empty;
+                if (param.Order[0] != null && param.Columns[param.Order[0].Column].Orderable && !string.IsNullOrEmpty(param.SortOrder))
+                {
+                    direction = param.Order[0].Dir.ToString();
+                }
+                RoomApplicationSearchModel searchParams = null;
+                if (!string.IsNullOrEmpty(param.Search.Value))
+                {
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    searchParams = js.Deserialize<RoomApplicationSearchModel>(param.Search.Value.ToString());
+                }
+
+                var roomApplication = from r in _dbContext.RoomApplications where !r.IsDeleted select r;
+
+
+                if (SessionUser.UserRole == Models.User.Role.Student)
+                {
+                    roomApplication = roomApplication.Where(r => r.UserId == SessionUser.Id);
+                }
+
+                if (searchParams != null)
+                {
+
+                    if (searchParams.StatusId.HasValue)
+                    {
+                        var status = (RoomApplication.RoomApplicationStatusEnum)searchParams.StatusId.Value;
+                        roomApplication = roomApplication.Where(s => s.RoomApplicationStatus == status);
+                    }
+
+                    if (searchParams.StartDate.HasValue)
+                    {
+                        roomApplication = roomApplication.Where(s => s.ApplyDate >= searchParams.StartDate.Value);
+                    }
+
+                    if (searchParams.EndDate.HasValue)
+                    {
+                        roomApplication = roomApplication.Where(s => s.ApplyDate >= searchParams.EndDate.Value);
+                    }
+                }
+                else
+                {
+                    DateTime startDate = DateTime.Now.AddDays(-10);
+                    DateTime endDate = DateTime.Now;
+
+                    roomApplication = roomApplication.Where(s => s.ApplyDate >= startDate && s.ApplyDate <= endDate);
+                }
+
+                var joinedQuery = (from roomApp in roomApplication
+                                   join user in _dbContext.Users on roomApp.UserId equals user.Id
+                                   join room in _dbContext.Rooms on roomApp.RoomId equals room.Id
+                                   where !roomApp.IsDeleted && !user.IsDeleted && !room.IsDeleted && user.UserRole == Models.User.Role.Student
+                                   select new RoomApplicationViewModel
+                                   {
+                                       Id = roomApp.Id,
+                                       UserFullName = user.Name + " " + user.Lastname,
+                                       RoomName = room.RoomName,
+                                       ApplyDate = roomApp.ApplyDate,
+                                       AccommodationStartDate = roomApp.AccommodationStartDate,
+                                       AccodomodationEndDate = roomApp.AccodomodationEndDate,
+                                       PaymentDate = roomApp.PaymentDate,
+                                       RoomApplicationStatus = roomApp.RoomApplicationStatus.ToString()
+                                   });
+
+
+                if (!string.IsNullOrEmpty(direction))
+                {
+
+
+
+                    if (direction == "ASC")
+                        joinedQuery = joinedQuery.OrderByField(param.SortOrder, true);
+                    else if (direction == "DESC")
+                    {
+                        joinedQuery = joinedQuery.OrderByField(param.SortOrder, false);
+                    }
+                }
+                else
+                {
+                    joinedQuery = joinedQuery.OrderByField("Id", false);
+                }
+
+
+                var roomApplicationList = joinedQuery.Skip(param.Start).Take(param.Length).ToList();
+
+
+                dataTableViewModel.draw = param.Draw;
+
+                dataTableViewModel.data.AddRange(roomApplicationList);
+
+                dataTableViewModel.recordsTotal = roomApplicationList.Count();
+                dataTableViewModel.recordsFiltered = dataTableViewModel.recordsTotal;
+
+
+
+                return Json(dataTableViewModel);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return Json(dataTableViewModel);
+            }
         }
 
-        // GET: RoomApplications/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            RoomApplication roomApplication = db.RoomApplications.Find(id);
-            if (roomApplication == null)
-            {
-                return HttpNotFound();
-            }
-            return View(roomApplication);
-        }
 
-        // POST: RoomApplications/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,UserId,RoomId,ApplyDate,AccommodationStartDate,AccodomodationEndDate,PaymentDate,CreatedUserId,CreatedDate,ModifiedUserId,ModifiedDate")] RoomApplication roomApplication)
+        public JsonResult ChangeApplicationStatus(int id, int status)
         {
-            if (ModelState.IsValid)
+            JsonResultViewModel<bool> jsonResponse = new JsonResultViewModel<bool>();
+            try
             {
-                db.Entry(roomApplication).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+
+                jsonResponse.NotifyType = JsonResultNotifyType.error;
+                jsonResponse.Message = "An error occurred while processing your transaction.";
+
+                var statusEnum = (RoomApplication.RoomApplicationStatusEnum)status;
+                if (SessionUser.UserRole == Models.User.Role.Student && (statusEnum != RoomApplication.RoomApplicationStatusEnum.Cancelled || statusEnum != RoomApplication.RoomApplicationStatusEnum.PaymentCompleted))
+                {
+                    jsonResponse.Message = "You dont have this permission!";
+                    return Json(jsonResponse, JsonRequestBehavior.AllowGet);
+                }
+
+                var item = _dbContext.RoomApplications.FirstOrDefault(d => d.Id == id);
+                if (item != null)
+                {
+                    item.ModifiedDate = DateTime.Now;
+                    item.ModifiedUserId = SessionUser.Id;
+                    item.RoomApplicationStatus = statusEnum;
+
+
+                    if (item.RoomApplicationStatus == RoomApplication.RoomApplicationStatusEnum.Approved)
+                    {
+
+                        var room = _dbContext.Rooms.FirstOrDefault(u => !u.IsDeleted && u.Id == item.RoomId);
+
+                        if (room.CurrentCapacity < room.RoomCapacity)
+                        {
+                            var student = _dbContext.Users.FirstOrDefault(u => !u.IsDeleted && u.Id == item.UserId);
+                            if (student != null)
+                            {
+                                if (student.RoomId.HasValue)
+                                {
+                                    var oldRoom = _dbContext.Rooms.FirstOrDefault(u => !u.IsDeleted && u.Id == item.RoomId);
+                                    if (oldRoom != null)
+                                    {
+                                        oldRoom.CurrentCapacity--;
+                                        if (oldRoom.CurrentCapacity < 0)
+                                        {
+                                            oldRoom.CurrentCapacity = 0;
+                                        }
+                                    }
+                                }
+                                room.CurrentCapacity++;
+                                student.RoomId = item.RoomId; //place student to the room
+                            }
+                        }
+                        else
+                        {
+                            jsonResponse.NotifyType = JsonResultNotifyType.error;
+                            jsonResponse.Message = "Room capacity is not enough.";
+                            return Json(jsonResponse, JsonRequestBehavior.AllowGet);
+                        }
+
+
+
+                    }
+
+
+                    _dbContext.SaveChanges();
+                    jsonResponse.NotifyType = JsonResultNotifyType.info;
+                    jsonResponse.Message = "Your transaction has been completed successfully";
+                    jsonResponse.ResponseData = true;
+                }
+
             }
-            return View(roomApplication);
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+            return Json(jsonResponse, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: RoomApplications/Delete/5
-        public ActionResult Delete(int? id)
+
+        [HttpPost]
+        public JsonResult MakePayment(int id)
         {
-            if (id == null)
+            JsonResultViewModel<bool> jsonResponse = new JsonResultViewModel<bool>();
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                jsonResponse.NotifyType = JsonResultNotifyType.error;
+                jsonResponse.Message = "An error occurred while processing your transaction.";
+
+
+                var item = _dbContext.RoomApplications.FirstOrDefault(d => d.Id == id);
+                if (item != null)
+                {
+                    item.ModifiedDate = DateTime.Now;
+                    item.ModifiedUserId = SessionUser.Id;
+                    item.PaymentDate = DateTime.Now;
+                    item.RoomApplicationStatus = RoomApplication.RoomApplicationStatusEnum.PaymentCompleted;
+
+                    _dbContext.SaveChanges();
+                    jsonResponse.NotifyType = JsonResultNotifyType.info;
+                    jsonResponse.Message = "Your transaction has been completed successfully";
+                    jsonResponse.ResponseData = true;
+                }
+
             }
-            RoomApplication roomApplication = db.RoomApplications.Find(id);
-            if (roomApplication == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                _logger.Error(ex);
             }
-            return View(roomApplication);
+            return Json(jsonResponse, JsonRequestBehavior.AllowGet);
         }
 
-        // POST: RoomApplications/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            RoomApplication roomApplication = db.RoomApplications.Find(id);
-            db.RoomApplications.Remove(roomApplication);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

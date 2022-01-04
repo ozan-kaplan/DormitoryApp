@@ -9,7 +9,7 @@ namespace Web.Models
     {
         public enum RoomApplicationStatusEnum
         {
-            Pending, WaitPayment, Approved, Unapproved
+            Pending, WaitPayment, PaymentCompleted ,Approved, Unapproved , Cancelled
         }
 
 

@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Mvc;
 using System.Web.Security;
 using Web.DAL;
+using Web.Helpers;
 using Web.Models;
 
 namespace Web.Controllers
 {
     public class AccountController : Controller
     {
-        private DormitoryAppDbContext db = new DormitoryAppDbContext();
-         
+        private DormitoryAppDbContext _dbContext = new DormitoryAppDbContext();
+
+
         [AllowAnonymous]
         public ActionResult Login()
-        {  
+        {
             return View();
         }
 
@@ -27,22 +30,22 @@ namespace Web.Controllers
 
 
         [AllowAnonymous]
-        [HttpPost] 
-        public ActionResult Login ([Bind(Include = "Email,Password")] UserLoginModel user)
+        [HttpPost]
+        public ActionResult Login([Bind(Include = "Email,Password")] UserLoginModel user)
         {
             if (ModelState.IsValid)
-            { 
-                var userItem =  db.Users.FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
+            {
+                var userItem = _dbContext.Users.FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
                 if (userItem != null)
                 { 
-                    Session["User"] = userItem;
+                    CachingHelper.AddUserToCache(userItem.Email, userItem); 
                     FormsAuthentication.SetAuthCookie(userItem.Email, false);
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
                     ViewBag.LoginError = "Kullanıcı adı veya şifreniz hatalıdır.";
-                }  
+                }
             }
 
             return View(user);
@@ -50,7 +53,6 @@ namespace Web.Controllers
 
         public ActionResult Logout()
         {
-            Session["User"] = null;
             FormsAuthentication.SignOut();
             return RedirectToAction("Login");
         }
@@ -61,7 +63,7 @@ namespace Web.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _dbContext.Dispose();
             }
             base.Dispose(disposing);
         }

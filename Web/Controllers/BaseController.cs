@@ -5,11 +5,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Web.DAL;
+using Web.Helpers;
 using Web.Models;
 
 namespace Web.Controllers
 {
-
+    [Authorize]
     public class BaseController : Controller
     {
 
@@ -25,8 +26,11 @@ namespace Web.Controllers
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            SessionUser = Session["User"] as User;
+        { 
+
+            SessionUser =  CachingHelper.GetUserFromCache(User.Identity.Name); 
+
+            //SessionUser =   Session["User"] as User;
 
             if (SessionUser == null)
             {
@@ -46,14 +50,14 @@ namespace Web.Controllers
                             if (actionName == "Create" || actionName == "Edit" || actionName == "DeleteDormitoryAnnouncement")
                             {
 
-                                filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
+                                filterContext.Result = new RedirectResult(Url.Action("Logout", "Account"));
                             }
                         }
                         break;
                     case "Students":
                         if (SessionUser.UserRole == Models.User.Role.Student)
                         {
-                            filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
+                            filterContext.Result = new RedirectResult(Url.Action("Logout", "Account"));
                         }
                         break;
                     case "Rooms":
@@ -62,26 +66,15 @@ namespace Web.Controllers
                             if (actionName == "Create" || actionName == "Edit" || actionName == "DeleteRoom")
                             {
 
-                                filterContext.Result = new RedirectResult(Url.Action("Login", "Account"));
+                                filterContext.Result = new RedirectResult(Url.Action("Logout", "Account"));
                             } 
-                        }
-
-
-
-                        break;
-
-
-
+                        }  
+                        break; 
+                
                     default:
                         break;
-                }
-
-
-            }
-
-
-
-
+                }   
+            }  
 
             base.OnActionExecuting(filterContext);
         }

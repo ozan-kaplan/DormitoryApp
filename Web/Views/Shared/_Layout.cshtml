@@ -1,8 +1,6 @@
-﻿
-<!DOCTYPE html>
-
-@using Web.Models
-
+﻿@using Web.Models
+@using Web.Helpers
+<!DOCTYPE html>  
 <html>
 <head>
     <meta charset="utf-8" />
@@ -14,14 +12,14 @@
 
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"> 
-   
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+
     <link href="~/Content/ladda-themeless.min.css" rel="stylesheet" />
     <link href="~/Content/toastr.css" rel="stylesheet" />
 </head>
 <body>
     @{
-        var user = Session["User"] as User;
+        var user = CachingHelper.GetUserFromCache(User.Identity.Name);
     }
 
 

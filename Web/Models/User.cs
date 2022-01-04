@@ -38,5 +38,8 @@ namespace Web.Models
 
         public UserStatusEnum UserStatus { get; set; }
 
+
+        public int? RoomId { get; set; }
+
     }
 }

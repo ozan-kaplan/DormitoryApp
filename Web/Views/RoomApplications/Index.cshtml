@@ -1,98 +1,351 @@
 ﻿@using Web.Models
+@using Web.Helpers
+@using Web.Models.ViewModels
 
-@model IEnumerable<Web.Models.RoomApplication>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Room Application List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h3 class="display-5 pb-3 mb-3 border-bottom"> Room Applications </h3>
+<h3 class="display-5 pb-3 mb-3 border-bottom"> Room Application List </h3>
 
 @{
-    var user = Session["User"] as User;
+    var user = CachingHelper.GetUserFromCache(User.Identity.Name);
 }
 
-@if (user.UserRole != Web.Models.User.Role.Student)
-{
-    <p class="text-end text-right">
-        <a class="btn btn-success" href="@Url.Action("Create")"><i class="fas fa-plus"></i> Create New a Room Apply</a>
-    </p>
-}
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.UserId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.RoomId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ApplyDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AccommodationStartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AccodomodationEndDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PaymentDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreatedUserId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ModifiedUserId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ModifiedDate)
-        </th>
-        <th></th>
-    </tr>
 
-    @foreach (var item in Model)
+
+
+<div class="row">
+    <div class="col-3">
+        <label>Application Start Date</label>
+        <input type="date" id="txtStartDate" class="form-control" placeholder="Application Start Date" />
+    </div>
+    <div class="col-3">
+        <label>Application End Date</label>
+        <input type="date" id="txtEndDate" class="form-control" placeholder="Application End Date" />
+    </div>
+    <div class="col-4">
+        <label>Application Status</label>
+        <select class="form-control" id="selectStatus">
+            <option value="">Select Room Application Status</option>
+            <option value="@((int)RoomApplication.RoomApplicationStatusEnum.Pending)">Pending</option>
+            <option value="@((int)RoomApplication.RoomApplicationStatusEnum.WaitPayment)">Wait Payment</option>
+            <option value="@((int)RoomApplication.RoomApplicationStatusEnum.PaymentCompleted)">Payment Completed</option>
+            <option value="@((int)RoomApplication.RoomApplicationStatusEnum.Approved)"> Approved</option>
+            <option value="@((int)RoomApplication.RoomApplicationStatusEnum.Unapproved)">Unapproved</option>
+            <option value="@((int)RoomApplication.RoomApplicationStatusEnum.Cancelled)">Cancelled</option>
+        </select>
+    </div>
+    <div class="col-2" style="padding-top: 31px;">
+        <button id="btnSearch" class="btn btn-dark"> Search</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <table class="table table-striped table-bordered table-advance table-hover responsive nowrap order-column  mt-4" id="roomApplicationDataTable" width="100%">
+
+
+            <thead>
+                <tr>
+                    <th>
+                    </th>
+                    <th>
+                        User Full Name
+                    </th>
+                    <th>
+                        Room Name
+                    </th>
+                    <th>
+                        Application Date
+                    </th>
+                    <th>
+                        Accommodation Start Date
+                    </th>
+                    <th>
+                        Accommodation End Date
+                    </th>
+                    <th>
+                        Payment Date
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Operations
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+</div>
+
+
+
+
+<div class="modal fade" id="makePaymentModal" tabindex="-1" role="dialog" aria-labelledby="makePaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="makePaymentModalLabel">Payment Operation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <input type="number" class="form-control" id="txtCardNumber" placeholder="Card Number">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <input type="text" class="form-control" id="txtCardUserName" placeholder="Card User Name">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6 pr-0">
+                        <input type="text" class="form-control" id="txtCardCvv" placeholder="Cvc" maxlength="3">
+                    </div>
+                    <div class="col-3 pr-0">
+                        <input type="number" class="form-control" id="txtCardExpiryMonth" placeholder="Month" maxlength="2">
+                    </div>
+                    <div class="col-3">
+                        <input type="number" class="form-control" id="txtCardExpiryYear" placeholder="Year" maxlength="4">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSavePayment"><i class="fas fa-save"></i> Pay </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+
+
+    <script>
+
+        var dataGrid;
+
+
+            $(document).ready(function () {
+            searchButton = Ladda.create(document.querySelector("#btnSearch"));
+                dataGrid = document.DormitoryApp.dataTable({
+                id: "roomApplicationDataTable",
+                url: '@Url.Action("GetRoomApplicationList")',
+                sortIndex: 0,
+                sortDirection: "desc",
+                searchButton: searchButton,
+                columns: [
+                    { data: "Id", name: "Id" },
+                    { data: "UserFullName", name: "UserFullName", autoWidth: true },
+                    { data: "RoomName", name: "RoomName", autoWidth: true },
+                    { data: "ApplyDate", name: "ApplyDate", autoWidth: true },
+                    { data: "AccommodationStartDate", name: "AccommodationStartDate", autoWidth: true },
+                    { data: "AccodomodationEndDate", name: "AccodomodationEndDate", autoWidth: true },
+                    { data: "PaymentDate", name: "PaymentDate", autoWidth: true },
+                    { data: "RoomApplicationStatus", name: "RoomApplicationStatus", autoWidth: true },
+
+                        {
+                            mRender: function (data, type, row) {
+
+                                var html = "";
+
+
+
+
+                                if ('@user.UserRole' != '@Web.Models.User.Role.Student' ) {
+
+                                    if (row.RoomApplicationStatus == '@Web.Models.RoomApplication.RoomApplicationStatusEnum.Pending') {
+
+
+                                    var getPaidBtn = $("<a/>", {
+                                        "class": "btn btn-success btn-sm text-white",
+                                        id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.WaitPayment),
+                                        onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.WaitPayment) + ",'fa-check');",
+                                        style: "cursor:pointer;",
+                                        text: ' Get Paid'
+                                    });
+
+                                        getPaidBtn.prepend('<i class="fas fa-check"></i>');
+                                        html += " " + getPaidBtn[0].outerHTML;
+
+                                           var cancelBtn = $("<a/>", {
+                                        "class": "btn btn-warning btn-sm text-white",
+                                         id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled),
+                                        onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled) + ",'fa-times');",
+                                        style: "cursor:pointer;",
+                                        text: ' Make Payment'
+                                    });
+
+                                        cancelBtn.prepend('<i class="fas fa-times"></i>');
+                                        html += " " + cancelBtn[0].outerHTML;
+                                    }
+                                    else if (row.RoomApplicationStatus == '@Web.Models.RoomApplication.RoomApplicationStatusEnum.PaymentCompleted') {
+
+                                           var approveBtn = $("<a/>", {
+                                        "class": "btn btn-success btn-sm text-white",
+                                        id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Approved),
+                                               onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Approved) + ",'fa-check');",
+                                        style: "cursor:pointer;",
+                                        text: ' Approve'
+                                    });
+
+                                    approveBtn.prepend('<i class="fas fa-check"></i>');
+                                    html += " " + approveBtn[0].outerHTML;
+
+                                    var unapproveBtn = $("<a/>", {
+                                        "class": "btn btn-danger btn-sm text-white",
+                                          id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Unapproved),
+                                        onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Unapproved) + ",'fa-times');",
+                                        style: "cursor:pointer;",
+                                        text: ' Unapprove'
+                                    });
+
+                                    unapproveBtn.prepend('<i class="fas fa-times"></i>');
+                                    html += " " + unapproveBtn[0].outerHTML;
+                                    }
+
+
+                                } else if ('@user.UserRole' == '@Web.Models.User.Role.Student') {
+
+                                    if (row.RoomApplicationStatus == '@Web.Models.RoomApplication.RoomApplicationStatusEnum.WaitPayment') {
+
+
+                                    var makePaidBtn = $("<a/>", {
+                                        "class": "btn btn-warning btn-sm text-white",
+                                        onclick: "ShowMakePaymentModal(" + row.Id + ");",
+                                        style: "cursor:pointer;",
+                                        text: ' Make Payment'
+                                    });
+
+                                        makePaidBtn.prepend('<i class="fas fa-money-bill-wave"></i>');
+                                        html += " " + makePaidBtn[0].outerHTML;
+                                    }
+
+                                    if (row.RoomApplicationStatus == '@Web.Models.RoomApplication.RoomApplicationStatusEnum.Pending' || row.RoomApplicationStatus == '@Web.Models.RoomApplication.RoomApplicationStatusEnum.WaitPayment') {
+
+
+                                    var cancelBtn = $("<a/>", {
+                                        "class": "btn btn-warning btn-sm text-white",
+                                         id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled),
+                                        onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled) + ",'fa-times');",
+                                        style: "cursor:pointer;",
+                                        text: ' Make Payment'
+                                    });
+
+                                        cancelBtn.prepend('<i class="fas fa-times"></i>');
+                                        html += " " + cancelBtn[0].outerHTML;
+                                    }
+
+
+
+                                }
+
+
+                                return html;
+                            }
+                        }
+                ],
+                columnDefs: [
+                 {
+                     "targets": 0,
+                     "visible": false,
+                     "searchable": false
+                 },
+                 {
+                     "targets": 7,
+                     "searchable": false,
+                     "orderable": false
+                    },
+                    {
+                        targets: [3,4,5, 6],
+                        render: function (data, type, full, meta) {
+                            if (data)
+                                return moment(data).format('DD.MM.YYYY HH:mm:ss');
+                            else
+                                return "";
+                        }
+                    }
+                ]
+            });
+            $("#btnSearch").click(function () {
+                searchButton.start();
+                var searchModel = {
+                    SearchText: '',
+                    StartDate: $("#txtStartDate").val(),
+                    EndDate: $("#txtEndDate").val(),
+                    StatusId: $("#selectStatus").val(),
+                };
+                dataGrid.search(JSON.stringify(searchModel));
+                dataGrid.draw();
+            });
+
+        });
+
+            function ChangeApplicationStatus(id, status, btnIcon) {
+
+
+            document.DormitoryApp.request({
+                    method: '@Url.Action("ChangeApplicationStatus")',
+                data: { id: id, status: status},
+                    loading: true,
+                    beforeSend: function () {
+                        document.DormitoryApp.ajaxLoading('#btn_' + id + '_' + status, btnIcon);
+                    },
+                    complete: function () {
+                        document.DormitoryApp.ajaxLoading('#btn_' + id + '_' + status, btnIcon);
+                    },
+                        success: function (result) {
+                            if (result && result.ResponseData) {
+                                dataGrid.draw();
+                            }
+                        }
+                    });
+        }
+
+
+    </script>
+
+
+    @if (user.UserRole == Web.Models.User.Role.Student)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoomId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApplyDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AccommodationStartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AccodomodationEndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedUserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedUserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDate)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
+
+      
+<script>
+            function ShowMakePaymentModal(id) {
+
+                $("#makePaymentModal").data("id", id);
+                $("#makePaymentModal").modal("show");
+            }
+
+            $(document).ready(function () {
+
+
+                $("#btnSavePayment").click(function () {
+
+                    if ($("#txtCardNumber").val() == "" || $("#txtCardUserName").val() == "" || $("#txtCardCvv").val() == "" || $("#txtCardExpiryMonth").val() == "" || $("#txtCardExpiryYear").val() == "") {
+                        alert("All fields are required.");
+                        return;
+                    } else {  
+                        ChangeApplicationStatus($("#makePaymentModal").data("id"), @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.PaymentCompleted) , 'fa-save');   
+                    } 
+
+                });
+
+
+            });
+
+
+</script>
     }
 
-</table>
+}
