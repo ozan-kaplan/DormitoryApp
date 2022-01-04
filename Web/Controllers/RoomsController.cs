@@ -275,6 +275,18 @@ namespace Web.Controllers
                 jsonResponse.NotifyType = JsonResultNotifyType.error;
                 jsonResponse.Message = "An error occurred while processing your transaction.";
 
+                if (roomApplication.AccommodationStartDate == DateTime.MinValue || roomApplication.AccodomodationEndDate == DateTime.MinValue  )
+                {
+                    jsonResponse.Message = "All fields are required. Please fill all inputs.";
+                    return Json(jsonResponse, JsonRequestBehavior.AllowGet);
+                }
+
+
+                if (roomApplication.AccommodationStartDate >  roomApplication.AccodomodationEndDate )
+                {
+                    jsonResponse.Message = "Accommodation Start Date should be lower than Accodomodation End Date";
+                    return Json(jsonResponse, JsonRequestBehavior.AllowGet);
+                }
 
 
                 var hasUserRoomApplication  = _dbContext.RoomApplications.FirstOrDefault(d => d.UserId == SessionUser.Id);
@@ -284,7 +296,7 @@ namespace Web.Controllers
                     return Json(jsonResponse, JsonRequestBehavior.AllowGet);
                 }
 
-                var item = _dbContext.Rooms.FirstOrDefault(d => d.Id == roomApplication.Id);
+                var item = _dbContext.Rooms.FirstOrDefault(d => d.Id == roomApplication.RoomId);
                 if (item != null)
                 {
 
@@ -293,16 +305,16 @@ namespace Web.Controllers
                         CreatedDate = DateTime.Now,
                         CreatedUserId = SessionUser.Id,
                         UserId = SessionUser.Id,
-                        RoomId = roomApplication.Id,
+                        RoomId = roomApplication.RoomId,
                         AccommodationStartDate = roomApplication.AccommodationStartDate,
                         AccodomodationEndDate = roomApplication.AccodomodationEndDate,
-                        RoomApplicationStatus = RoomApplication.Status.Pending,
+                        RoomApplicationStatus = RoomApplication.RoomApplicationStatusEnum.Pending,
                         ApplyDate = DateTime.Now,
                     };
 
                     _dbContext.RoomApplications.Add(roomApplicationDataItem);
                     _dbContext.SaveChanges();
-
+                    jsonResponse.ResponseData = true;
                     jsonResponse.NotifyType = JsonResultNotifyType.info;
                     jsonResponse.Message = "Your transaction has been completed successfully. You can track your application in My room application page.";
                 }

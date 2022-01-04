@@ -18,5 +18,16 @@ namespace Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);  
         }
+
+
+        protected void Application_PostAuthenticateRequest(object sender, EventArgs e)
+        {
+            if (Request.IsAuthenticated)
+            {
+                //var principal = new CustomPrincipal(HttpContext.Current.User.Identity);
+                //HttpContext.Current.User = principal;
+            }
+        }
+
     }
 }

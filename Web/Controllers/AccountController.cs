@@ -35,7 +35,8 @@ namespace Web.Controllers
                 var userItem =  db.Users.FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
                 if (userItem != null)
                 { 
-                    Session["User"] = userItem; 
+                    Session["User"] = userItem;
+                    FormsAuthentication.SetAuthCookie(userItem.Email, false);
                     return RedirectToAction("Index","Home");
                 }
                 else
@@ -50,6 +51,7 @@ namespace Web.Controllers
         public ActionResult Logout()
         {
             Session["User"] = null;
+            FormsAuthentication.SignOut();
             return RedirectToAction("Login");
         }
 

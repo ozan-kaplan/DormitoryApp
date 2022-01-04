@@ -18,8 +18,8 @@ namespace Web.DAL
                 Email = "systemadmin@mail.com",
                 Password = "1",
                 UserRole = User.Role.SystemAdmin,
-                UserGender = User.Gender.Unknown,
-                UserStatus = User.Status.Approved,
+                UserGender = User.UserGenderEnum.Unknown,
+                UserStatus = User.UserStatusEnum.Approved,
                 IsDeleted = false,
                 CreatedDate = DateTime.Now, 
                 CreatedUserId = -1
@@ -31,8 +31,8 @@ namespace Web.DAL
                 Email = "ozankaplan@mail.com",
                 Password = "1",
                 UserRole = User.Role.Student,
-                UserGender = User.Gender.Male,
-                UserStatus = User.Status.Pending,
+                UserGender = User.UserGenderEnum.Male,
+                UserStatus = User.UserStatusEnum.Pending,
                 IsDeleted = false,
                 CreatedDate = DateTime.Now,
                 CreatedUserId = 1

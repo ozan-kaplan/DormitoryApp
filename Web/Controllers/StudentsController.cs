@@ -56,7 +56,7 @@ namespace Web.Controllers
 
                     if (searchParams.StatusId.HasValue)
                     {
-                        var status = (Web.Models.User.Status)searchParams.StatusId.Value;
+                        var status = (Web.Models.User.UserStatusEnum)searchParams.StatusId.Value;
                         students = students.Where(s => s.UserStatus == status);
                     }
                 }
@@ -165,7 +165,7 @@ namespace Web.Controllers
                 var item = _dbContext.Users.FirstOrDefault(d => d.Id == id && d.UserRole == Models.User.Role.Student);
                 if (item != null)
                 {
-                    item.UserStatus =  (User.Status)userStatus ;
+                    item.UserStatus =  (User.UserStatusEnum)userStatus ;
                     item.ModifiedDate = DateTime.Now;
                     item.ModifiedUserId = SessionUser.Id;
                     _dbContext.SaveChanges();

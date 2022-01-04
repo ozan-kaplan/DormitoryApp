@@ -7,6 +7,7 @@ using Web.DAL;
 
 namespace Web.Controllers
 { 
+    [Authorize]
     public class HomeController : BaseController
     {
        

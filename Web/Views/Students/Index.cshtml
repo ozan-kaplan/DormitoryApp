@@ -25,9 +25,9 @@
 
         <select class="form-control" id="selectStatus">
             <option value="">Select User Status</option>
-            <option value="@((int)Web.Models.User.Status.Pending)">Pending</option>
-            <option value="@((int)Web.Models.User.Status.Approved)">Approved</option>
-            <option value="@((int)Web.Models.User.Status.Unapproved)">Unapproved</option>
+            <option value="@((int)Web.Models.User.UserStatusEnum.Pending)">Pending</option>
+            <option value="@((int)Web.Models.User.UserStatusEnum.Approved)">Approved</option>
+            <option value="@((int)Web.Models.User.UserStatusEnum.Unapproved)">Unapproved</option>
         </select>
     </div>
     <div class="col-2">
@@ -121,11 +121,11 @@
                                     html += " " + deleteBtn[0].outerHTML;
 
 
-                                    if (row.UserStatus == '@(Web.Models.User.Status.Unapproved.ToString())') {
+                                    if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Unapproved.ToString())') {
                                             var approveBtn = $("<a/>", {
                                         "class": "btn btn-success btn-sm text-white",
                                         id: "btnUnapprove_" + row.Id,
-                                        onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.Status.Approved),'btnApprove_" + row.Id +  "' , 'fa-check');",
+                                        onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.UserStatusEnum.Approved),'btnApprove_" + row.Id +  "' , 'fa-check');",
                                         style: "cursor:pointer;",
                                         text: ' Approve'
                                     });
@@ -134,11 +134,11 @@
                                         html += " " + approveBtn[0].outerHTML;
                                     }
 
-                                    if (row.UserStatus == '@(Web.Models.User.Status.Approved.ToString())') {
+                                    if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Approved.ToString())') {
                                            var unapproveBtn = $("<a/>", {
                                         "class": "btn btn-danger btn-sm text-white",
                                         id: "btnUnapprove_" + row.Id,
-                                        onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.Status.Unapproved),'btnUnapprove_" + row.Id + "' , 'fa-times');",
+                                        onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.UserStatusEnum.Unapproved),'btnUnapprove_" + row.Id + "' , 'fa-times');",
                                         style: "cursor:pointer;",
                                         text: ' Unapprove'
                                     });

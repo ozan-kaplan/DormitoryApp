@@ -13,11 +13,11 @@ namespace Web.Models
             SystemAdmin, Admin, Student
         }
 
-        public enum Gender
+        public enum UserGenderEnum
         {
             Unknown , Male, Female 
         }
-        public enum Status
+        public enum UserStatusEnum
         {
             Pending, Approved, Unapproved
         }
@@ -32,11 +32,11 @@ namespace Web.Models
      
         public string Password { get; set; } 
        
-        public Gender UserGender { get; set; } 
+        public UserGenderEnum UserGender { get; set; } 
        
         public Role UserRole { get; set; }
 
-        public Status UserStatus { get; set; }
+        public UserStatusEnum UserStatus { get; set; }
 
     }
 }

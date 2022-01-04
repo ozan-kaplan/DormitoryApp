@@ -7,7 +7,7 @@ namespace Web.Models
 {
     public class RoomApplication : BaseModel
     {
-        public enum Status
+        public enum RoomApplicationStatusEnum
         {
             Pending, WaitPayment, Approved, Unapproved
         }
@@ -23,7 +23,7 @@ namespace Web.Models
 
         public DateTime? PaymentDate { get; set; }
 
-        public Status RoomApplicationStatus { get; set; }
+        public RoomApplicationStatusEnum RoomApplicationStatus { get; set; }
 
     }
 }

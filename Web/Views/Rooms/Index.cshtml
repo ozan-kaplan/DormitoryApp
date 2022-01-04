@@ -74,6 +74,35 @@
 </table>
 
 
+<div class="modal fade" id="roomApplicationModal" tabindex="-1" role="dialog" aria-labelledby="roomApplicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roomApplicationModalLabel">Apply a Room</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Accomodation Start Date:</label>
+                        <input type="date" class="form-control" id="txtAccomodotionStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Accomodation End Date::</label>
+                        <input type="date" class="form-control" id="txtAccomodotionEndDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSaveRoomApplication"><i class="fas fa-save"></i> Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 @section scripts{
@@ -142,13 +171,13 @@
                                 if ('@user.UserRole' == '@Web.Models.User.Role.Student') {
 
                                     var applyBtn = $("<a/>", {
-                                        "class": "btn btn-danger btn-sm text-white",
-                                        onclick: "ApplyRoom(" + row.Id + ");",
+                                        "class": "btn btn-success btn-sm text-white",
+                                        onclick: "ShowApplyRoomModal(" + row.Id + ");",
                                         style: "cursor:pointer;",
                                         text: ' Apply'
                                     });
 
-                                    applyBtn.prepend(document.DeleteIcon);
+                                    applyBtn.prepend('<i class="fas fa-clipboard-list"></i>');
                                     html += " " + applyBtn[0].outerHTML;
                                 }
 
@@ -180,6 +209,44 @@
                 dataGrid.draw();
             });
 
+
+
+                $("#btnSaveRoomApplication").click(function () {
+                    if ($("#txtAccomodotionStartDate").val() == "" || $("#txtAccomodotionEndDate").val() == "") {
+                        alert("All fields are required.");
+                    }
+
+                    var roomApplicationObject = {
+                        AccommodationStartDate: $("#txtAccomodotionStartDate").val()  ,
+                        AccodomodationEndDate: $("#txtAccomodotionEndDate").val(),
+                        RoomId: $("#roomApplicationModal").data("room-id"),
+                    };
+
+
+                   document.DormitoryApp.request({
+                    method: '@Url.Action("ApplyRoom")',
+                    data: { roomApplication : roomApplicationObject },
+                    loading: true,
+                    beforeSend: function () {
+                        document.DormitoryApp.ajaxLoading('#btnSaveRoomApplication'  , 'fa-save');
+                    },
+                    complete: function () {
+                        document.DormitoryApp.ajaxLoading('#btnSaveRoomApplication', 'fa-save');
+                    },
+                        success: function (result) {
+                            if (result && result.ResponseData) {
+                                dataGrid.draw();
+                            }
+                        }
+                    });
+
+
+
+                });
+
+
+
+
         });
 
 
@@ -194,12 +261,16 @@
             document.DormitoryApp.deleteOperation(obj);
         }
 
+        function ShowApplyRoomModal(id) {
+            $("#roomApplicationModal").data("room-id", id);
+            $("#roomApplicationModal").modal("show");
+        }
 
 
 
 
-    </script>
 
 
+    </script> 
 
 }
