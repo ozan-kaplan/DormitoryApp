@@ -1,6 +1,6 @@
 ﻿@using Web.Models
 @using Web.Helpers
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -47,24 +47,17 @@
 
                     <li class="nav-item">@Html.ActionLink("Rooms", "Index", "Rooms", null, new { @class = "nav-link" })</li>
 
-
-
-
                     @if (user != null && user.UserRole != Web.Models.User.Role.Student)
                     {
                         <li class="nav-item">@Html.ActionLink("Room Applications", "Index", "RoomApplications", null, new { @class = "nav-link" })</li>
-                        <li class="nav-item">@Html.ActionLink("Past Room Applications", "PastRoomApplications", "RoomApplications", null, new { @class = "nav-link" })</li>
-
                     }
                     else
                     {
                         <li class="nav-item">@Html.ActionLink("My Room Applications", "Index", "RoomApplications", null, new { @class = "nav-link" })</li>
 
-                        <li class="nav-item">@Html.ActionLink("My Past Room Applications", "StudentPastRoomApplications", "RoomApplications", null, new { @class = "nav-link" })</li>
-
                     }
 
-                    <li class="nav-item">@Html.ActionLink("My Profile Information", "Profile", "User", null, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("My Profile Information", "Index", "Profile", null, new { @class = "nav-link" })</li>
 
 
 

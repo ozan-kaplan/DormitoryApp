@@ -21,7 +21,7 @@
         </div>
 
         <div class="form-group">
-            <label class="control-label col-md-2">Room Fee </label>
+            <label class="control-label col-md-2">Room Fee (Per day)</label>
             <div class="col-md-10">
                 @Html.EditorFor(model => model.RoomFee, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.RoomFee, "", new { @class = "text-danger" })

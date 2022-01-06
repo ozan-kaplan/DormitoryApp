@@ -168,22 +168,22 @@
 
 
                                     var getPaidBtn = $("<a/>", {
-                                        "class": "btn btn-success btn-sm text-white",
+                                        "class": "btn btn-warning btn-sm text-white",
                                         id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.WaitPayment),
                                         onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.WaitPayment) + ",'fa-check');",
-                                        style: "cursor:pointer;",
+                                        style: "cursor:pointer;color: black !important;",
                                         text: ' Get Paid'
                                     });
 
-                                        getPaidBtn.prepend('<i class="fas fa-check"></i>');
+                                        getPaidBtn.prepend('<i class="fas fa-money-bill-wave"></i>');
                                         html += " " + getPaidBtn[0].outerHTML;
 
                                            var cancelBtn = $("<a/>", {
-                                        "class": "btn btn-warning btn-sm text-white",
+                                        "class": "btn btn-danger btn-sm text-white",
                                          id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled),
                                         onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled) + ",'fa-times');",
                                         style: "cursor:pointer;",
-                                        text: ' Make Payment'
+                                        text: ' Cancel'
                                     });
 
                                         cancelBtn.prepend('<i class="fas fa-times"></i>');
@@ -223,7 +223,7 @@
                                     var makePaidBtn = $("<a/>", {
                                         "class": "btn btn-warning btn-sm text-white",
                                         onclick: "ShowMakePaymentModal(" + row.Id + ");",
-                                        style: "cursor:pointer;",
+                                        style: "cursor:pointer;color: black !important;",
                                         text: ' Make Payment'
                                     });
 
@@ -235,11 +235,11 @@
 
 
                                     var cancelBtn = $("<a/>", {
-                                        "class": "btn btn-warning btn-sm text-white",
+                                        "class": "btn btn-danger btn-sm text-white",
                                          id: "btn_" + row.Id + "_" + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled),
                                         onclick: "ChangeApplicationStatus(" + row.Id + ", " + @((int)Web.Models.RoomApplication.RoomApplicationStatusEnum.Cancelled) + ",'fa-times');",
                                         style: "cursor:pointer;",
-                                        text: ' Make Payment'
+                                        text: ' Cancel'
                                     });
 
                                         cancelBtn.prepend('<i class="fas fa-times"></i>');
@@ -307,6 +307,7 @@
                         success: function (result) {
                             if (result && result.ResponseData) {
                                 dataGrid.draw();
+                                $("#makePaymentModal").modal("hide");
                             }
                         }
                     });

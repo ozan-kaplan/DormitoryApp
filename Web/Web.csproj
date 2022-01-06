@@ -141,6 +141,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DormitoryAnnouncementsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\RoomApplicationsController.cs" />
     <Compile Include="Controllers\RoomsController.cs" />
     <Compile Include="Controllers\StudentsController.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Models\ViewModels\DormitoryAnnouncementViewModel.cs" />
     <Compile Include="Models\ViewModels\Enums.cs" />
     <Compile Include="Models\ViewModels\JsonResultViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProfileViewModel.cs" />
     <Compile Include="Models\ViewModels\RoomApplicationViewModel.cs" />
     <Compile Include="Models\ViewModels\RoomViewModel.cs" />
     <Compile Include="Models\ViewModels\StudentsViewModel.cs" />
@@ -235,6 +237,7 @@
     <Content Include="Views\RoomApplications\Index.cshtml" />
     <Content Include="Views\Students\Details.cshtml" />
     <Content Include="Views\Students\Index.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

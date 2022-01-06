@@ -1,0 +1,124 @@
+﻿@model Web.Models.ViewModels.ProfileViewModel
+
+@{
+    ViewBag.Title = "Profile Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<h3 class="display-5 pb-3 mb-3 border-bottom">Profile Information</h3>
+
+
+@if (Model.UserItem != null)
+{
+    <table class="table table-bordered">
+        <tbody>  
+
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Name</span>
+                </td>
+                <td>@Model.UserItem.Name</td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Lastname</span>
+                </td>
+                <td>@Model.UserItem.Lastname</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Email</span>
+                </td>
+                <td>@Model.UserItem.Email</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Gender</span>
+                </td>
+                <td>@Model.UserItem.UserGender.ToString()</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Register Date</span>
+                </td>
+                <td>@Model.UserItem.CreatedDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+}
+
+
+
+@if (Model.RoomItem != null)
+{
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <span class="font-weight-bold"> Room Information  </span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Room Name</span>
+                </td>
+                <td>@Model.RoomItem.RoomName</td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Apply Date</span>
+                </td>
+                <td>@Model.RoomItem.ApplyDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Accommodation Start Date</span>
+
+                </td>
+                <td>@Model.RoomItem.AccommodationStartDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Accommodation End Date</span>
+
+                </td>
+                <td>@Model.RoomItem.AccodomodationEndDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span class="font-weight-bold">Payment Date</span>
+
+                </td>
+                <td>
+                    @if (Model.RoomItem.PaymentDate.HasValue)
+                    {
+                       @Model.RoomItem.PaymentDate.Value.ToString("dd.MM.yyyy HH:mm:ss")
+                    }
+                </td>
+            </tr>
+
+
+        </tbody>
+    </table>
+
+}
+
+
+
+<p>
+     
+    <a class="btn btn-outline-secondary btn-sm " href="@Url.Action("Index" , "Home")">
+        <i class="fas fa-chevron-left"></i>  Back to Home
+    </a>
+</p>
+
+

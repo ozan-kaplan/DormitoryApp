@@ -149,7 +149,7 @@ namespace Web.Controllers
                 jsonResponse.Message = "An error occurred while processing your transaction.";
 
                 var statusEnum = (RoomApplication.RoomApplicationStatusEnum)status;
-                if (SessionUser.UserRole == Models.User.Role.Student && (statusEnum != RoomApplication.RoomApplicationStatusEnum.Cancelled || statusEnum != RoomApplication.RoomApplicationStatusEnum.PaymentCompleted))
+                if (SessionUser.UserRole == Models.User.Role.Student && (statusEnum != RoomApplication.RoomApplicationStatusEnum.Cancelled && statusEnum != RoomApplication.RoomApplicationStatusEnum.PaymentCompleted))
                 {
                     jsonResponse.Message = "You dont have this permission!";
                     return Json(jsonResponse, JsonRequestBehavior.AllowGet);
