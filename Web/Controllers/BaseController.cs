@@ -69,8 +69,13 @@ namespace Web.Controllers
                                 filterContext.Result = new RedirectResult(Url.Action("Logout", "Account"));
                             } 
                         }  
-                        break; 
-                
+                        break;
+                    case "Users":
+                        if (SessionUser.UserRole == Models.User.Role.Student || SessionUser.UserRole == Models.User.Role.Admin)
+                        { 
+                             filterContext.Result = new RedirectResult(Url.Action("Logout", "Account")); 
+                        } 
+                        break;    
                     default:
                         break;
                 }   

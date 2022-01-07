@@ -38,6 +38,11 @@
                         @Html.ActionLink("Dormitory Announcements", "Index", "DormitoryAnnouncements", null, new { @class = "nav-link" })
                     </li>
 
+                    @if (user != null && user.UserRole == Web.Models.User.Role.SystemAdmin)
+                    {
+                        <li class="nav-item">@Html.ActionLink("Admins", "Index", "Users", null, new { @class = "nav-link" })</li>
+                    }
+
 
 
                     @if (user != null && user.UserRole != Web.Models.User.Role.Student)

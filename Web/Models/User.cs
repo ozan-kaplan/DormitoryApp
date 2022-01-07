@@ -19,17 +19,19 @@ namespace Web.Models
         }
         public enum UserStatusEnum
         {
-            Pending, Approved, Unapproved
+             Active , Passive
         }
 
+        [Required(ErrorMessage = "Name field is required.")]
         public string Name { get; set; }
-        
+
+        [Required(ErrorMessage = "Lastname field is required.")]
         public string Lastname { get; set; }
-     
-    
+
+        [Required(ErrorMessage = "Email field is required.")]
         public string Email { get; set; }
-       
-     
+
+        [Required(ErrorMessage = "Password field is required.")]
         public string Password { get; set; } 
        
         public UserGenderEnum UserGender { get; set; } 

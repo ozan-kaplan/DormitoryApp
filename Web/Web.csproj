@@ -145,6 +145,7 @@
     <Compile Include="Controllers\RoomApplicationsController.cs" />
     <Compile Include="Controllers\RoomsController.cs" />
     <Compile Include="Controllers\StudentsController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="DAL\DormitoryAppDbContext.cs" />
     <Compile Include="DAL\DormitoryAppDbInitializer.cs" />
     <Compile Include="Global.asax.cs">
@@ -171,6 +172,7 @@
     <Compile Include="Models\ViewModels\RoomApplicationViewModel.cs" />
     <Compile Include="Models\ViewModels\RoomViewModel.cs" />
     <Compile Include="Models\ViewModels\StudentsViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +240,11 @@
     <Content Include="Views\Students\Details.cshtml" />
     <Content Include="Views\Students\Index.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Users\Create.cshtml" />
+    <Content Include="Views\Users\Delete.cshtml" />
+    <Content Include="Views\Users\Details.cshtml" />
+    <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -19,11 +19,27 @@ namespace Web.DAL
                 Password = "1",
                 UserRole = User.Role.SystemAdmin,
                 UserGender = User.UserGenderEnum.Unknown,
-                UserStatus = User.UserStatusEnum.Approved,
+                UserStatus = User.UserStatusEnum.Active,
                 IsDeleted = false,
                 CreatedDate = DateTime.Now, 
                 CreatedUserId = -1
             };
+
+            User admintItem = new User()
+            {
+                Name = "Tugay Sinan",
+                Lastname = "Ergün",
+                Email = "tsergun@mail.com",
+                Password = "1",
+                UserRole = User.Role.Admin,
+                UserGender = User.UserGenderEnum.Male,
+                UserStatus = User.UserStatusEnum.Active,
+                IsDeleted = false,
+                CreatedDate = DateTime.Now,
+                CreatedUserId = 1
+            };
+
+
             User studentItem = new User()
             {
                 Name = "Ozan",
@@ -32,7 +48,7 @@ namespace Web.DAL
                 Password = "1",
                 UserRole = User.Role.Student,
                 UserGender = User.UserGenderEnum.Male,
-                UserStatus = User.UserStatusEnum.Pending,
+                UserStatus = User.UserStatusEnum.Passive,
                 IsDeleted = false,
                 CreatedDate = DateTime.Now,
                 CreatedUserId = 1

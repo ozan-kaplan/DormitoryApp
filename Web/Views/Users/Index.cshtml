@@ -12,10 +12,16 @@
 
 
 
-<h3 class="display-5 pb-3 mb-3 border-bottom">Student List</h3>
+<h3 class="display-5 pb-3 mb-3 border-bottom">Admin List</h3>
 
 
+@if (user != null && user.UserRole == Web.Models.User.Role.SystemAdmin)
+{
+    <p class="text-end text-right">
+        <a class="btn btn-success" href="@Url.Action("Create")"><i class="fas fa-plus"></i> Add a New Admin</a>
+    </p>
 
+}
 
 <div class="row">
     <div class="col-3">
@@ -37,7 +43,7 @@
 
 <div class="row">
     <div class="col">
-        <table class="table table-striped table-bordered table-advance table-hover responsive nowrap order-column  mt-4" id="studentsDatatable" width="100%">
+        <table class="table table-striped table-bordered table-advance table-hover responsive nowrap order-column  mt-4" id="userDatatable" width="100%">
             <thead>
                 <tr>
                     <th>
@@ -81,8 +87,8 @@
             $(document).ready(function () {
             searchButton = Ladda.create(document.querySelector("#btnSearch"));
                 dataGrid = document.DormitoryApp.dataTable({
-                    id: "studentsDatatable",
-                url: '@Url.Action("GetStudentsList")',
+                    id: "userDatatable",
+                url: '@Url.Action("GetUserList")',
                 sortIndex: 6,
                 sortDirection: "desc",
                 searchButton: searchButton,
@@ -98,14 +104,21 @@
                             mRender: function (data, type, row) {
 
                                 var html = "";
+                         if ('@user.UserRole' == '@Web.Models.User.Role.SystemAdmin') {
+                                   var editBtn =  $("<a/>", {
+                                        "class": "btn btn-primary btn-sm text-white",
+                                        "href": "Users/Edit?id=" + row.Id ,
+                                        style: "cursor:pointer;",
+                                        text: ' Edit'
+                                   });
 
-                                if ('@user.UserRole' != '@Web.Models.User.Role.Student') {
-
+                                    editBtn.prepend(document.EditIcon);
+                                    html = editBtn[0].outerHTML;
 
 
                                     var detailsBtn = $("<a/>", {
                                         "class": "btn btn-warning btn-sm text-white",
-                                        "href": "Students/Details?id=" + row.Id,
+                                        "href": "Users/Details?id=" + row.Id,
                                         style: "cursor:pointer;",
                                         text: ' Details'
                                     });
@@ -116,48 +129,15 @@
 
                                     var deleteBtn = $("<a/>", {
                                         "class": "btn btn-danger btn-sm text-white",
-                                        onclick : "DeleteStudents(" + row.Id + ");",
+                                        onclick : "DeleteUser(" + row.Id + ");",
                                         style: "cursor:pointer;",
                                         text: ' Delete'
                                     });
 
                                     deleteBtn.prepend(document.DeleteIcon);
                                     html += " " + deleteBtn[0].outerHTML;
-
-
-                                    if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Passive.ToString())') {
-                                            var approveBtn = $("<a/>", {
-                                        "class": "btn btn-success btn-sm text-white",
-                                        id: "btnUnapprove_" + row.Id,
-                                        onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.UserStatusEnum.Active),'btnApprove_" + row.Id +  "' , 'fa-check');",
-                                        style: "cursor:pointer;",
-                                        text: ' Activate'
-                                    });
-
-                                        approveBtn.prepend('<i  class="fas fa-check"></i>');
-                                        html += " " + approveBtn[0].outerHTML;
-                                    }
-
-                                    if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Active.ToString())') {
-                                           var unapproveBtn = $("<a/>", {
-                                        "class": "btn btn-danger btn-sm text-white",
-                                        id: "btnUnapprove_" + row.Id,
-                                        onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.UserStatusEnum.Passive),'btnUnapprove_" + row.Id + "' , 'fa-times');",
-                                        style: "cursor:pointer;",
-                                        text: ' Passive'
-                                    });
-                                    unapproveBtn.prepend('<i   class="fas fa-times"></i>');
-
-
-
-
-                                    html += " " + unapproveBtn[0].outerHTML;
-                                    }
-
-
-
-
                                 }
+
                                 return html;
                             }
                         }
@@ -189,30 +169,15 @@
 
             });
 
-        function ChangeStudentStatus(id, userStatus, btnId, btnIcon)
-        {
 
-
-
-            document.DormitoryApp.request({
-                    method: '@Url.Action("ChangeStudentStatus")',
-                    data: { id: id, userStatus : userStatus },
-                    loading: true,
-                    beforeSend: function () {
-                        document.DormitoryApp.ajaxLoading('#' + btnId, btnIcon);
-                    },
-                    complete: function () {
-                        document.DormitoryApp.ajaxLoading('#' + btnId, btnIcon);
-                    },
-                        success: function (result) {
-                            if (result && result.ResponseData) {
-                                dataGrid.draw();
-                            }
-                        }
-                    });
-
+        function DeleteUser(id) {
+               var obj = {
+                url: '@Url.Action("DeleteUser")',
+                data: { id: id },
+                grid: dataGrid
+            };
+            document.DormitoryApp.deleteOperation(obj);
         }
-
     </script>
 
 

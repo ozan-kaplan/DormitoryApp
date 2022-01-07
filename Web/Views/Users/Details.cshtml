@@ -1,4 +1,4 @@
-﻿@model Web.Models.ViewModels.StudentsViewModel
+﻿@model Web.Models.ViewModels.UserViewModel
 
 @{
     ViewBag.Title = "Student Details";
@@ -6,7 +6,7 @@
 }
 
 
-<h3 class="display-5 pb-3 mb-3 border-bottom">Student Details</h3>
+<h3 class="display-5 pb-3 mb-3 border-bottom">User Details</h3>
 
 
 
@@ -48,13 +48,13 @@
                 <span class="font-weight-bold"> User Role  </span>
             </td>
             <td> @Html.DisplayFor(model => model.UserRole)</td>
-        </tr>  
+        </tr>
         <tr>
             <td>
                 <span class="font-weight-bold">  Register Date   </span>
             </td>
             <td>
-                @Model.CreatedDate 
+                @Model.CreatedDate
             </td>
         </tr>
 
@@ -64,7 +64,9 @@
     </tbody>
 </table>
 
-<p> 
+<p>
+
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit" , new { id = Model.Id })"><i class="fas fa-pencil-alt"></i> Edit</a>
     <a class="btn btn-outline-secondary btn-sm " href="@Url.Action("Index")">
         <i class="fas fa-chevron-left"></i>  Back to List
     </a>
