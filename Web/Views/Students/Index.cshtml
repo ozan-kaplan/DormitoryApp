@@ -25,7 +25,8 @@
     <div class="col-3">
 
         <select class="form-control" id="selectStatus">
-            <option value="">Select User Status</option> 
+            <option value="">Select User Status</option>
+            <option value="@((int)Web.Models.User.UserStatusEnum.Pending)">Active</option>
             <option value="@((int)Web.Models.User.UserStatusEnum.Active)">Active</option>
             <option value="@((int)Web.Models.User.UserStatusEnum.Passive)">Passive</option>
         </select>
@@ -125,7 +126,7 @@
                                     html += " " + deleteBtn[0].outerHTML;
 
 
-                                    if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Passive.ToString())') {
+                                    if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Passive.ToString())' || row.UserStatus == '@(Web.Models.User.UserStatusEnum.Pending.ToString())') {
                                             var approveBtn = $("<a/>", {
                                         "class": "btn btn-success btn-sm text-white",
                                         id: "btnUnapprove_" + row.Id,

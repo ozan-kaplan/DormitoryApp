@@ -19,7 +19,7 @@ namespace Web.Models
         }
         public enum UserStatusEnum
         {
-             Active , Passive
+             Pending,Active , Passive
         }
 
         [Required(ErrorMessage = "Name field is required.")]

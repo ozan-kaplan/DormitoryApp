@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Web.Models
 {
-    public class UserLoginModel
+    public class UserLoginViewModel
     {
         [Required(ErrorMessage = "Email is required.")]
         public string Email { get; set; }

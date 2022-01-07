@@ -162,7 +162,7 @@
     <Compile Include="Models\SearchModels\RoomSearchModel.cs" />
     <Compile Include="Models\SearchModels\StudentsSearchModel.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="Models\UserLoginModel.cs" />
+    <Compile Include="Models\ViewModels\UserLoginViewModel.cs" />
     <Compile Include="Models\UserRoom.cs" />
     <Compile Include="Models\ViewModels\DataTableViewModel.cs" />
     <Compile Include="Models\ViewModels\DormitoryAnnouncementViewModel.cs" />
@@ -172,6 +172,7 @@
     <Compile Include="Models\ViewModels\RoomApplicationViewModel.cs" />
     <Compile Include="Models\ViewModels\RoomViewModel.cs" />
     <Compile Include="Models\ViewModels\StudentsViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserRegisterViewModel.cs" />
     <Compile Include="Models\ViewModels\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -245,6 +246,7 @@
     <Content Include="Views\Users\Details.cshtml" />
     <Content Include="Views\Users\Edit.cshtml" />
     <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Account\_AccountLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
