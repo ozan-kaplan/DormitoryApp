@@ -322,6 +322,15 @@ namespace Web.Controllers
                     jsonResponse.ResponseData = true;
                     jsonResponse.NotifyType = JsonResultNotifyType.info;
                     jsonResponse.Message = "Your transaction has been completed successfully. You can track your application in My room application page.";
+
+
+
+            
+                   EmailHelper.Send(EmailHelper.EmailType.RommApplicationStatusChange, SessionUser.Email, "Your room application registration has been received. Please wait for it to be approved by your administrator. You will be notified of the registration result by e-mail.");
+                      
+
+
+
                 }
 
             }

@@ -118,7 +118,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var studentDataItem = _dbContext.Users.FirstOrDefault(u =>  u.Id == id && !u.IsDeleted && u.UserRole == Models.User.Role.Student);
+            var studentDataItem = _dbContext.Users.FirstOrDefault(u => u.Id == id && !u.IsDeleted && u.UserRole == Models.User.Role.Student);
             StudentsViewModel studentViewModel = null;
 
             if (studentDataItem != null)
@@ -165,7 +165,7 @@ namespace Web.Controllers
                 var item = _dbContext.Users.FirstOrDefault(d => d.Id == id && d.UserRole == Models.User.Role.Student);
                 if (item != null)
                 {
-                    item.UserStatus =  (User.UserStatusEnum)userStatus ;
+                    item.UserStatus = (User.UserStatusEnum)userStatus;
                     item.ModifiedDate = DateTime.Now;
                     item.ModifiedUserId = SessionUser.Id;
                     _dbContext.SaveChanges();
@@ -173,6 +173,24 @@ namespace Web.Controllers
                     jsonResponse.NotifyType = JsonResultNotifyType.info;
                     jsonResponse.Message = "Your transaction has been completed successfully";
                     jsonResponse.ResponseData = true;
+
+
+
+
+                    switch (item.UserStatus)
+                    {
+                        case Models.User.UserStatusEnum.Active:
+                            EmailHelper.Send(EmailHelper.EmailType.StudentStatusChange, item.Email, "Your account has been activated. You can login to the system.");
+                            break;
+                        case Models.User.UserStatusEnum.Passive:
+                            EmailHelper.Send(EmailHelper.EmailType.StudentStatusChange, item.Email, "Your account has been deactivated. You will not be able to login to the system until your account is reactivated.");
+                            break;
+                        default:
+                            break;
+                    }
+
+
+
                 }
 
             }

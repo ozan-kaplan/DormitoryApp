@@ -149,7 +149,8 @@ namespace Web.Controllers
                 jsonResponse.Message = "An error occurred while processing your transaction.";
 
                 var statusEnum = (RoomApplication.RoomApplicationStatusEnum)status;
-                if (SessionUser.UserRole == Models.User.Role.Student && (statusEnum != RoomApplication.RoomApplicationStatusEnum.Cancelled && statusEnum != RoomApplication.RoomApplicationStatusEnum.PaymentCompleted))
+                if (SessionUser.UserRole == Models.User.Role.Student &&
+                    (statusEnum != RoomApplication.RoomApplicationStatusEnum.Cancelled && statusEnum != RoomApplication.RoomApplicationStatusEnum.PaymentCompleted))
                 {
                     jsonResponse.Message = "You dont have this permission!";
                     return Json(jsonResponse, JsonRequestBehavior.AllowGet);
@@ -162,6 +163,35 @@ namespace Web.Controllers
                     item.ModifiedUserId = SessionUser.Id;
                     item.RoomApplicationStatus = statusEnum;
 
+                    var studentItem = _dbContext.Users.FirstOrDefault(u => u.Id == item.UserId && u.UserRole == Models.User.Role.Student && !u.IsDeleted);
+                    if (studentItem != null)
+                    {
+                        switch (statusEnum)
+                        {
+                            //case RoomApplication.RoomApplicationStatusEnum.Pending:
+                            //    break;
+                            case RoomApplication.RoomApplicationStatusEnum.WaitPayment:
+                                EmailHelper.Send(EmailHelper.EmailType.RommApplicationStatusChange, studentItem.Email, "Your room application registration has passed to the payment step. Please log in to the system to pay.");
+                                break;
+                            case RoomApplication.RoomApplicationStatusEnum.PaymentCompleted:
+                                item.PaymentDate = DateTime.Now;
+                                break;
+                            case RoomApplication.RoomApplicationStatusEnum.Approved:
+                                EmailHelper.Send(EmailHelper.EmailType.RommApplicationStatusChange, studentItem.Email, "Your room application registration has APPROVED.");
+
+                                break;
+                            case RoomApplication.RoomApplicationStatusEnum.Unapproved:
+                                EmailHelper.Send(EmailHelper.EmailType.RommApplicationStatusChange, studentItem.Email, "Your room application registration has UNAPPROVED");
+                                break;
+                            case RoomApplication.RoomApplicationStatusEnum.Cancelled:
+                                EmailHelper.Send(EmailHelper.EmailType.RommApplicationStatusChange, studentItem.Email, "Your room application registration has CANCCELLED");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+
 
                     if (item.RoomApplicationStatus == RoomApplication.RoomApplicationStatusEnum.Approved)
                     {
@@ -169,11 +199,11 @@ namespace Web.Controllers
                         var room = _dbContext.Rooms.FirstOrDefault(u => !u.IsDeleted && u.Id == item.RoomId);
 
                         if (room.CurrentCapacity < room.RoomCapacity)
-                        {
-                            var student = _dbContext.Users.FirstOrDefault(u => !u.IsDeleted && u.Id == item.UserId);
-                            if (student != null)
+                        { 
+
+                            if (studentItem != null)
                             {
-                                if (student.RoomId.HasValue)
+                                if (studentItem.RoomId.HasValue)
                                 {
                                     var oldRoom = _dbContext.Rooms.FirstOrDefault(u => !u.IsDeleted && u.Id == item.RoomId);
                                     if (oldRoom != null)
@@ -186,7 +216,7 @@ namespace Web.Controllers
                                     }
                                 }
                                 room.CurrentCapacity++;
-                                student.RoomId = item.RoomId; //place student to the room
+                                studentItem.RoomId = item.RoomId; //place student to the room
                             }
                         }
                         else

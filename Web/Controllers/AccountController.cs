@@ -31,6 +31,12 @@ namespace Web.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
 
         [AllowAnonymous]
         [HttpPost]
@@ -43,9 +49,17 @@ namespace Web.Controllers
                     var userItem = _dbContext.Users.FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
                     if (userItem != null)
                     {
-                        CachingHelper.AddUserToCache(userItem.Email, userItem);
-                        FormsAuthentication.SetAuthCookie(userItem.Email, false);
-                        return RedirectToAction("Index", "Home");
+                        if (userItem.UserStatus != Models.User.UserStatusEnum.Active)
+                        {
+                            ViewBag.LoginError = "Your account has not been activated.";
+                        }
+                        else
+                        {
+                            CachingHelper.AddUserToCache(userItem.Email, userItem);
+                            FormsAuthentication.SetAuthCookie(userItem.Email, false);
+                            return RedirectToAction("Index", "Home");
+
+                        }
                     }
                     else
                     {
@@ -85,27 +99,63 @@ namespace Web.Controllers
                         Password = user.Password,
                         UserGender = user.UserGender,
                         UserStatus = Models.User.UserStatusEnum.Pending,
-                        CreatedDate = DateTime.Now, 
-                        CreatedUserId = -2, 
+                        CreatedDate = DateTime.Now,
+                        CreatedUserId = -2,
                         IsDeleted = false
                     };
 
                     _dbContext.Users.Add(userDataItem);
                     _dbContext.SaveChanges();
+
+
+                    EmailHelper.Send(EmailHelper.EmailType.StudentStatusChange, user.Email, "Your student registration has been created, please wait for it to be approved by your administrator. You will be notified of the registration result by e-mail.");
+
+
+
                     return RedirectToAction("Login", "Account");
                 }
-                else {
-                    return View(user); 
-                } 
+                else
+                {
+                    return View(user);
+                }
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
                 ModelState.AddModelError("Name", "An error occurred while processing your transaction.");
                 return View(user);
-            } 
+            }
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult ForgotPassword([Bind(Include = "Email")] UserForgotPasswordViewModel user)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userItem = _dbContext.Users.FirstOrDefault(u => u.Email == user.Email && !u.IsDeleted);
+                    if (userItem != null)
+                    {
+
+                        EmailHelper.Send(EmailHelper.EmailType.PasswordReminder, userItem.Email, "Your password is " + userItem.Password);
+                        ModelState.AddModelError("Email", "Password reminder email has been sent.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Email", "This email is not registered in the system.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                ModelState.AddModelError("Email", "An error occurred while processing your transaction.");
+            }
+
+            return View(user);
+        }
 
 
 

@@ -129,7 +129,7 @@
                                     if (row.UserStatus == '@(Web.Models.User.UserStatusEnum.Passive.ToString())' || row.UserStatus == '@(Web.Models.User.UserStatusEnum.Pending.ToString())') {
                                             var approveBtn = $("<a/>", {
                                         "class": "btn btn-success btn-sm text-white",
-                                        id: "btnUnapprove_" + row.Id,
+                                        id: "btnApprove_" + row.Id,
                                         onclick: "ChangeStudentStatus(" + row.Id + ",@((int)Web.Models.User.UserStatusEnum.Active),'btnApprove_" + row.Id +  "' , 'fa-check');",
                                         style: "cursor:pointer;",
                                         text: ' Activate'

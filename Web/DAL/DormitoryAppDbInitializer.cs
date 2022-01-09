@@ -23,28 +23,13 @@ namespace Web.DAL
                 IsDeleted = false,
                 CreatedDate = DateTime.Now, 
                 CreatedUserId = -1
-            };
-
-            User admintItem = new User()
-            {
-                Name = "Tugay Sinan",
-                Lastname = "Ergün",
-                Email = "tsergun@mail.com",
-                Password = "1",
-                UserRole = User.Role.Admin,
-                UserGender = User.UserGenderEnum.Male,
-                UserStatus = User.UserStatusEnum.Active,
-                IsDeleted = false,
-                CreatedDate = DateTime.Now,
-                CreatedUserId = 1
-            };
-
+            }; 
 
             User studentItem = new User()
             {
                 Name = "Ozan",
                 Lastname = "Kaplan",
-                Email = "ozankaplan@mail.com",
+                Email = "okaplan@st.medipol.edu.tr",
                 Password = "1",
                 UserRole = User.Role.Student,
                 UserGender = User.UserGenderEnum.Male,

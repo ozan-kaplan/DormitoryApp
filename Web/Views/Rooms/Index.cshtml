@@ -243,6 +243,7 @@
                         success: function (result) {
                             if (result && result.ResponseData) {
                                 dataGrid.draw();
+                                $("#roomApplicationModal").modal("hide");
                             }
                         }
                     });
