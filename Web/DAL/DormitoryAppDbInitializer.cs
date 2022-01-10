@@ -33,13 +33,30 @@ namespace Web.DAL
                 Password = "1",
                 UserRole = User.Role.Student,
                 UserGender = User.UserGenderEnum.Male,
-                UserStatus = User.UserStatusEnum.Passive,
+                UserStatus = User.UserStatusEnum.Active,
                 IsDeleted = false,
                 CreatedDate = DateTime.Now,
                 CreatedUserId = 1
             };
             context.Users.Add(systemAdmingUserItem);
             context.Users.Add(studentItem);
+
+
+            for (int i = 0; i < 20; i++)
+            {
+                Room room = new Room()
+                {
+                    RoomName = "Room " + (i + 1),
+                    RoomFee = 50,
+                    CreatedDate = DateTime.Now,
+                    CreatedUserId = -1,
+                    RoomCapacity = 4,
+                    CurrentCapacity = 0,
+                    IsDeleted = false,
+                };
+                context.Rooms.Add(room);
+            }  
+
             context.SaveChanges();
 
         }

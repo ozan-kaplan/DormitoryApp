@@ -61,15 +61,20 @@ namespace Web.Controllers
                         roomApplication = roomApplication.Where(s => s.RoomApplicationStatus == status);
                     }
 
-                    if (searchParams.StartDate.HasValue)
+                    if (searchParams.StartDate.HasValue && searchParams.EndDate.HasValue)
                     {
-                        roomApplication = roomApplication.Where(s => s.ApplyDate >= searchParams.StartDate.Value);
+                        roomApplication = roomApplication.Where(s => s.ApplyDate >= searchParams.StartDate.Value && s.ApplyDate <= searchParams.EndDate.Value);
                     }
+                    else
+                    {
+                        DateTime startDate = DateTime.Now.AddDays(-10);
+                        DateTime endDate = DateTime.Now; 
+                        roomApplication = roomApplication.Where(s => s.ApplyDate >= startDate && s.ApplyDate <= endDate);
+                    }
+                    
 
-                    if (searchParams.EndDate.HasValue)
-                    {
-                        roomApplication = roomApplication.Where(s => s.ApplyDate >= searchParams.EndDate.Value);
-                    }
+                   
+
                 }
                 else
                 {

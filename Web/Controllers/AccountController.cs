@@ -100,6 +100,7 @@ namespace Web.Controllers
                         UserGender = user.UserGender,
                         UserStatus = Models.User.UserStatusEnum.Pending,
                         CreatedDate = DateTime.Now,
+                        UserRole = Models.User.Role.Student,
                         CreatedUserId = -2,
                         IsDeleted = false
                     };
