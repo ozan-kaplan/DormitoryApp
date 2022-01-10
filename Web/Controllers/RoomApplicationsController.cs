@@ -205,7 +205,7 @@ namespace Web.Controllers
                             {
                                 if (studentItem.RoomId.HasValue)
                                 {
-                                    var oldRoom = _dbContext.Rooms.FirstOrDefault(u => !u.IsDeleted && u.Id == item.RoomId);
+                                    var oldRoom = _dbContext.Rooms.FirstOrDefault(u => !u.IsDeleted && u.Id == studentItem.RoomId);
                                     if (oldRoom != null)
                                     {
                                         oldRoom.CurrentCapacity--;

@@ -57,7 +57,7 @@ namespace Web.Controllers
                         {
                             CachingHelper.AddUserToCache(userItem.Email, userItem);
                             FormsAuthentication.SetAuthCookie(userItem.Email, false);
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Index", "DormitoryAnnouncements");
 
                         }
                     }
