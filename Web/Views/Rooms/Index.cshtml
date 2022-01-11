@@ -177,15 +177,18 @@
 
                                 if ('@user.UserRole' == '@Web.Models.User.Role.Student') {
 
-                                    var applyBtn = $("<a/>", {
-                                        "class": "btn btn-success btn-sm text-white",
-                                        onclick: "ShowApplyRoomModal(" + row.Id + ");",
-                                        style: "cursor:pointer;",
-                                        text: ' Apply'
-                                    });
+                                    if (row.RoomCapacity != row.CurrentCapacity) {
+                                        var applyBtn = $("<a/>", {
+                                            "class": "btn btn-success btn-sm text-white",
+                                            onclick: "ShowApplyRoomModal(" + row.Id + ");",
+                                            style: "cursor:pointer;",
+                                            text: ' Apply'
+                                        });
 
-                                    applyBtn.prepend('<i class="fas fa-clipboard-list"></i>');
-                                    html += " " + applyBtn[0].outerHTML;
+                                        applyBtn.prepend('<i class="fas fa-clipboard-list"></i>');
+                                        html += " " + applyBtn[0].outerHTML;
+                                    }
+                                  
                                 }
 
 
