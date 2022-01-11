@@ -25,21 +25,21 @@ namespace Web.DAL
                 CreatedUserId = -1
             }; 
 
-            User studentItem = new User()
-            {
-                Name = "Ozan",
-                Lastname = "Kaplan",
-                Email = "okaplan@st.medipol.edu.tr",
-                Password = "1",
-                UserRole = User.Role.Student,
-                UserGender = User.UserGenderEnum.Male,
-                UserStatus = User.UserStatusEnum.Active,
-                IsDeleted = false,
-                CreatedDate = DateTime.Now,
-                CreatedUserId = 1
-            };
+            //User studentItem = new User()
+            //{
+            //    Name = "Ozan",
+            //    Lastname = "Kaplan",
+            //    Email = "okaplan@st.medipol.edu.tr",
+            //    Password = "1",
+            //    UserRole = User.Role.Student,
+            //    UserGender = User.UserGenderEnum.Male,
+            //    UserStatus = User.UserStatusEnum.Active,
+            //    IsDeleted = false,
+            //    CreatedDate = DateTime.Now,
+            //    CreatedUserId = 1
+            //};
             context.Users.Add(systemAdmingUserItem);
-            context.Users.Add(studentItem);
+            //context.Users.Add(studentItem);
 
 
             for (int i = 0; i < 20; i++)

@@ -302,8 +302,16 @@ namespace Web.Controllers
                 }
 
                 var item = _dbContext.Rooms.FirstOrDefault(d => d.Id == roomApplication.RoomId);
+
+                
+
                 if (item != null)
                 {
+                    if (item.CurrentCapacity == item.RoomCapacity)
+                    {
+                        jsonResponse.Message = "Capacity is full.";
+                        return Json(jsonResponse, JsonRequestBehavior.AllowGet);
+                    }
 
                     RoomApplication roomApplicationDataItem = new RoomApplication()
                     {
